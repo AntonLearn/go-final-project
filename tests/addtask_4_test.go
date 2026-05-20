@@ -65,7 +65,6 @@ func postJSON(apipath string, values map[string]any, method string) (map[string]
 		m   map[string]any
 		err error
 	)
-
 	body, err := requestJSON(apipath, values, method)
 	if err != nil {
 		return nil, err

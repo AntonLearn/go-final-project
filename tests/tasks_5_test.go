@@ -56,6 +56,7 @@ func TestTasks(t *testing.T) {
 		comment: "с попкорном",
 		repeat:  "",
 	})
+
 	now = now.AddDate(0, 0, 1)
 	date := now.Format(`20060102`)
 	addTask(t, task{
