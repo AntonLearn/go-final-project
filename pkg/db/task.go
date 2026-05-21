@@ -19,8 +19,10 @@ const (
 		ORDER BY date LIMIT :limit`
 	getTasksLimitWhereTitleOrCommentCommand = `SELECT * FROM scheduler 
 		WHERE LOWER(title) LIKE LOWER(:search) OR LOWER(comment) LIKE LOWER(:search) ORDER BY date LIMIT :limit`
-	getTaskByIdCommand = `SELECT * FROM scheduler WHERE id = :id`
-	updateTaskCommand  = `UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id`
+	getTaskByIdCommand    = `SELECT * FROM scheduler WHERE id = :id`
+	updateTaskCommand     = `UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id`
+	deleteTaskCommand     = `DELETE FROM scheduler WHERE id = :id`
+	updateDateTaskCommand = `UPDATE scheduler SET date = :date WHERE id = :id`
 )
 
 func AddTask(task *Task) (int64, error) {
@@ -96,6 +98,33 @@ func UpdateTask(task *Task) error {
 	result, err := Db.Exec(updateTaskCommand, sql.Named("date", task.Date),
 		sql.Named("title", task.Title), sql.Named("comment", task.Comment),
 		sql.Named("repeat", task.Repeat), sql.Named("id", id))
+	if err != nil {
+		return err
+	}
+	count, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	switch count {
+	case 0:
+		return fmt.Errorf("request parameters: incorrect ID %d for updating task", id)
+	case 1:
+		return nil
+	default:
+		return errors.New("incorrect unexpected task update")
+	}
+}
+
+func DeleteTask(id int) error {
+	_, err := Db.Exec(deleteTaskCommand, sql.Named("id", id))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateDateTask(nextDate string, id int) error {
+	result, err := Db.Exec(updateDateTaskCommand, sql.Named("date", nextDate), sql.Named("id", id))
 	if err != nil {
 		return err
 	}

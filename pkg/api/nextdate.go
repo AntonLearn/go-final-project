@@ -15,24 +15,30 @@ import (
 var ErrEmpty = errors.New("line with repetition rule: empty line")
 
 func checkDate(task *db.Task) error {
-	now := time.Now()
+	nowDateStr := time.Now().Format(pkg.DateFormatTemplateYYYYMMDD)
 	if task.Date == "" {
-		task.Date = now.Format(pkg.DateFormatTemplateYYYYMMDD)
+		task.Date = nowDateStr
 	}
-	t, err := time.Parse(pkg.DateFormatTemplateYYYYMMDD, task.Date)
+	taskDate, err := time.Parse(pkg.DateFormatTemplateYYYYMMDD, task.Date)
 	if err != nil {
 		return err
 	}
-	var next string
-	next, err = NextDate(now, task.Date, task.Repeat)
-	if firstDateMoreSecondDate(now, t) {
+	nowDate, err := time.Parse(pkg.DateFormatTemplateYYYYMMDD, nowDateStr)
+	if err != nil {
+		return err
+	}
+	var nextDateStr string
+	nextDateStr, err = NextDate(nowDate, task.Date, task.Repeat)
+	if firstDateMoreSecondDate(nowDate, taskDate) {
 		if errors.Is(err, ErrEmpty) {
-			task.Date = now.Format(pkg.DateFormatTemplateYYYYMMDD)
+			task.Date = nowDateStr
+			return nil
 		} else {
 			if err != nil {
 				return err
 			}
-			task.Date = next
+			task.Date = nextDateStr
+			return nil
 		}
 	}
 	return nil

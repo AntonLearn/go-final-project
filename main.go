@@ -20,8 +20,8 @@ func main() {
 	// Creating new server with logger
 	server := server.NewServer(logger)
 	// Starting this server
+	logger.Printf("Server starting on http://localhost:%s\n", server.HTTPServer.Addr)
 	if err := server.HTTPServer.ListenAndServe(); err != nil {
 		logger.Fatal("Error starting server:", err)
 	}
-	logger.Printf("Server starting on http://localhost:%s\n", server.HTTPServer.Addr)
 }

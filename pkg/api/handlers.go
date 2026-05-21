@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/antonlearn/go-final-project/pkg"
@@ -34,17 +35,6 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(nextDate))
 }
 
-func taskHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodPost:
-		addTaskHandler(w, r)
-	case http.MethodGet:
-		getTaskHandler(w, r)
-	case http.MethodPut:
-		updateTaskHandler(w, r)
-	}
-}
-
 func tasksHandler(w http.ResponseWriter, r *http.Request) {
 	search := r.URL.Query().Get("search")
 	tasks, err := db.GetTasks(search)
@@ -53,4 +43,42 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, map[string]any{"tasks": tasks})
+}
+
+func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		writeErrorJSON(w, http.StatusBadRequest, "request parameters: no task ID specified")
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		writeErrorJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	task, err := db.GetTask(id)
+	if err != nil {
+		writeErrorJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if task.Repeat == "" {
+		err = db.DeleteTask(id)
+		if err != nil {
+			writeErrorJSON(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		writeJSON(w, emptyMap)
+	} else {
+		nextDate, err := NextDate(time.Now(), task.Date, task.Repeat)
+		if err != nil {
+			writeErrorJSON(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		err = db.UpdateDateTask(nextDate, id)
+		if err != nil {
+			writeErrorJSON(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		writeJSON(w, emptyMap)
+	}
 }

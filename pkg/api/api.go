@@ -11,8 +11,13 @@ func InitHandlers(mux *http.ServeMux) {
 	mux.Handle("/", http.FileServer(http.Dir(WebDir)))
 	// Creating handler for api/nextdate
 	mux.HandleFunc("/api/nextdate", nextDayHandler)
-	// Creating handler for api/task
-	mux.HandleFunc("/api/task", taskHandler)
 	// Creating handler for api/tasks
 	mux.HandleFunc("/api/tasks", tasksHandler)
+	// Creating handler for api/task/done
+	mux.HandleFunc("/api/task/done", taskDoneHandler)
+	// Creating handlers for api/task
+	mux.HandleFunc("POST /api/task", addTaskHandler)
+	mux.HandleFunc("GET /api/task", getTaskHandler)
+	mux.HandleFunc("PUT /api/task", updateTaskHandler)
+	mux.HandleFunc("DELETE /api/task", deleteTaskHandler)
 }

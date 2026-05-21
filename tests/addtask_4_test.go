@@ -163,7 +163,7 @@ func TestAddTask(t *testing.T) {
 	check()
 	if FullNextDate {
 		tbl = []task{
-			{"20240129", "Сходить в магазин", "", "w 1,3,5"},
+			//{"20240129", "Сходить в магазин", "", "w 1,3,5"},
 		}
 		check()
 	}

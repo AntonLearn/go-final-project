@@ -10,6 +10,8 @@ import (
 	"github.com/antonlearn/go-final-project/pkg/db"
 )
 
+var emptyMap = make(map[string]any, 0)
+
 func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -85,6 +87,24 @@ func updateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		writeErrorJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	var emptyMap map[string]any
+	writeJSON(w, emptyMap)
+}
+
+func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := r.URL.Query().Get("id")
+	if idStr == "" {
+		writeErrorJSON(w, http.StatusBadRequest, "request parameters: no task ID specified")
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		writeErrorJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	err = db.DeleteTask(id)
+	if err != nil {
+		writeErrorJSON(w, http.StatusBadRequest, err.Error())
+		return
+	}
 	writeJSON(w, emptyMap)
 }
