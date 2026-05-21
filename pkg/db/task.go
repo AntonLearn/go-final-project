@@ -2,6 +2,9 @@ package db
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +19,8 @@ const (
 		ORDER BY date LIMIT :limit`
 	getTasksLimitWhereTitleOrCommentCommand = `SELECT * FROM scheduler 
 		WHERE LOWER(title) LIKE LOWER(:search) OR LOWER(comment) LIKE LOWER(:search) ORDER BY date LIMIT :limit`
+	getTaskByIdCommand = `SELECT * FROM scheduler WHERE id = :id`
+	updateTaskCommand  = `UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id`
 )
 
 func AddTask(task *Task) (int64, error) {
@@ -27,7 +32,7 @@ func AddTask(task *Task) (int64, error) {
 	return result.LastInsertId()
 }
 
-func Tasks(limit int, search string) ([]*Task, error) {
+func GetTasks(search string) ([]*Task, error) {
 	var (
 		tasks []*Task
 		rows  *sql.Rows
@@ -38,15 +43,15 @@ func Tasks(limit int, search string) ([]*Task, error) {
 		searchDate, err := time.Parse(pkg.DateFormatTemplateDD_MM_YYYY, search)
 		if err == nil {
 			rows, err = Db.Query(getTasksLimitWhereDateCommand, sql.Named("date", searchDate.Format(pkg.DateFormatTemplateYYYYMMDD)),
-				sql.Named("limit", limit))
+				sql.Named("limit", pkg.MaxNumTasks))
 		} else {
 			searchPattern := "%" + search + "%"
 			rows, err = Db.Query(getTasksLimitWhereTitleOrCommentCommand,
 				sql.Named("search", searchPattern), sql.Named("search", searchPattern),
-				sql.Named("limit", limit))
+				sql.Named("limit", pkg.MaxNumTasks))
 		}
 	} else {
-		rows, err = Db.Query(getTasksLimitBaseCommand, sql.Named("limit", limit))
+		rows, err = Db.Query(getTasksLimitBaseCommand, sql.Named("limit", pkg.MaxNumTasks))
 	}
 	if err != nil {
 		return nil, err
@@ -68,4 +73,42 @@ func Tasks(limit int, search string) ([]*Task, error) {
 		return []*Task{}, nil
 	}
 	return tasks, nil
+}
+
+func GetTask(id int) (*Task, error) {
+	var task Task
+	err := Db.QueryRow(getTaskByIdCommand, sql.Named("id", id)).Scan(&task.ID, &task.Date,
+		&task.Title, &task.Comment, &task.Repeat)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("request parameters: no task with ID %d", id)
+		}
+		return nil, err
+	}
+	return &task, nil
+}
+
+func UpdateTask(task *Task) error {
+	id, err := strconv.Atoi(task.ID)
+	if err != nil {
+		return err
+	}
+	result, err := Db.Exec(updateTaskCommand, sql.Named("date", task.Date),
+		sql.Named("title", task.Title), sql.Named("comment", task.Comment),
+		sql.Named("repeat", task.Repeat), sql.Named("id", id))
+	if err != nil {
+		return err
+	}
+	count, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	switch count {
+	case 0:
+		return fmt.Errorf("request parameters: incorrect ID %d for updating task", id)
+	case 1:
+		return nil
+	default:
+		return errors.New("incorrect unexpected task update")
+	}
 }
