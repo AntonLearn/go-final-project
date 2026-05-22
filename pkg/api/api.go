@@ -2,6 +2,8 @@ package api
 
 import (
 	"net/http"
+
+	"github.com/antonlearn/go-final-project/pkg"
 )
 
 var WebDir = "./web" // Directory with frontend files
@@ -20,4 +22,5 @@ func InitHandlers(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/task", getTaskHandler)
 	mux.HandleFunc("PUT /api/task", updateTaskHandler)
 	mux.HandleFunc("DELETE /api/task", deleteTaskHandler)
+	pkg.Logger.Println("Handler initialization completed successfully")
 }

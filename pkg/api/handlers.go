@@ -33,6 +33,7 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(nextDate))
+	pkg.Logger.Printf("Next task date %s has been successfully generated and sent by server\n", nextDate)
 }
 
 func tasksHandler(w http.ResponseWriter, r *http.Request) {
@@ -43,6 +44,7 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, map[string]any{"tasks": tasks})
+	pkg.Logger.Printf("List of upcoming tasks %v has been created and sent by server\n", tasks)
 }
 
 func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
@@ -68,6 +70,7 @@ func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		writeJSON(w, emptyMap)
+		pkg.Logger.Println("Task was removed from list and processed by server as completed")
 	} else {
 		nextDate, err := NextDate(time.Now(), task.Date, task.Repeat)
 		if err != nil {
@@ -80,5 +83,6 @@ func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		writeJSON(w, emptyMap)
+		pkg.Logger.Printf("Task was processed by server as completed and its date was changed to new %s\n", nextDate)
 	}
 }

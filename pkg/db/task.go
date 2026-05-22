@@ -31,6 +31,7 @@ func AddTask(task *Task) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	pkg.Logger.Printf("Task %v was added successfully\n", task)
 	return result.LastInsertId()
 }
 
@@ -74,6 +75,7 @@ func GetTasks(search string) ([]*Task, error) {
 	if len(tasks) == 0 {
 		return []*Task{}, nil
 	}
+	pkg.Logger.Printf("List of upcoming tasks %v has been successfully created\n", tasks)
 	return tasks, nil
 }
 
@@ -87,6 +89,7 @@ func GetTask(id int) (*Task, error) {
 		}
 		return nil, err
 	}
+	pkg.Logger.Printf("Task %v with ID %d received successfully\n", task, id)
 	return &task, nil
 }
 
@@ -109,6 +112,7 @@ func UpdateTask(task *Task) error {
 	case 0:
 		return fmt.Errorf("request parameters: incorrect ID %d for updating task", id)
 	case 1:
+		pkg.Logger.Printf("Task %v with ID %d successfully updated\n", task, id)
 		return nil
 	default:
 		return errors.New("incorrect unexpected task update")
@@ -120,6 +124,7 @@ func DeleteTask(id int) error {
 	if err != nil {
 		return err
 	}
+	pkg.Logger.Printf("Task with ID %d successfully deleted\n", id)
 	return nil
 }
 
@@ -136,6 +141,7 @@ func UpdateDateTask(nextDate string, id int) error {
 	case 0:
 		return fmt.Errorf("request parameters: incorrect ID %d for updating task", id)
 	case 1:
+		pkg.Logger.Printf("Task date with ID %d successfully updated\n", id)
 		return nil
 	default:
 		return errors.New("incorrect unexpected task update")
