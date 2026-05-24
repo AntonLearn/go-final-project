@@ -2,6 +2,8 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"hash/crc32"
 	"net/http"
 
 	"github.com/antonlearn/go-final-project/pkg"
@@ -22,4 +24,8 @@ func writeJSON(w http.ResponseWriter, data any) {
 		return
 	}
 	w.Write(encoded)
+}
+
+func HashPassword(password string) string {
+	return fmt.Sprintf("%08x", crc32.ChecksumIEEE([]byte(password)))
 }

@@ -8,4 +8,7 @@ const (
 	MaxNumTasks                  = 50
 )
 
-var Logger *log.Logger
+var (
+	Logger *log.Logger
+	JwtKey = []byte("your-secret-key-here")
+)
