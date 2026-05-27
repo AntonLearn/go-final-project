@@ -12,7 +12,12 @@ import (
 func writeErrorJSON(w http.ResponseWriter, status int, errorMessage string) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(map[string]string{"error": errorMessage})
+	if err := json.NewEncoder(w).Encode(map[string]string{"error": errorMessage}); err != nil {
+		errorsString := fmt.Sprintf("%s: %s", errorMessage, err.Error())
+		http.Error(w, errorsString, http.StatusInternalServerError)
+		pkg.Logger.Println(errorsString)
+		return
+	}
 	pkg.Logger.Println(errorMessage)
 }
 
@@ -23,9 +28,13 @@ func writeJSON(w http.ResponseWriter, data any) {
 		writeErrorJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	w.Write(encoded)
+	_, err = w.Write(encoded)
+	if err != nil {
+		writeErrorJSON(w, http.StatusInternalServerError, err.Error())
+		return
+	}
 }
 
-func HashPassword(password string) string {
-	return fmt.Sprintf("%08x", crc32.ChecksumIEEE([]byte(password)))
+func HashPassword() {
+	pkg.ExpectedHashPassword = fmt.Sprintf("%08x", crc32.ChecksumIEEE([]byte(pkg.ExpectedPassword)))
 }

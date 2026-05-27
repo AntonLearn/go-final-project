@@ -19,7 +19,6 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 		writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	defer r.Body.Close()
 	var task db.Task
 	err = json.Unmarshal(body, &task)
 	if err != nil {
@@ -70,7 +69,6 @@ func updateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	defer r.Body.Close()
 	var task db.Task
 	err = json.Unmarshal(body, &task)
 	if err != nil {

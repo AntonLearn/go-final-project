@@ -11,23 +11,11 @@ import (
 	"github.com/antonlearn/go-final-project/pkg"
 )
 
-const (
-	addTaskCommand = `INSERT INTO scheduler (date, title, comment, repeat) 
-		VALUES (:date, :title, :comment, :repeat)`
-	getTasksLimitBaseCommand      = `SELECT * FROM scheduler ORDER BY date LIMIT :limit`
-	getTasksLimitWhereDateCommand = `SELECT * FROM scheduler WHERE date = :date 
-		ORDER BY date LIMIT :limit`
-	getTasksLimitWhereTitleOrCommentCommand = `SELECT * FROM scheduler 
-		WHERE LOWER(title) LIKE LOWER(:search) OR LOWER(comment) LIKE LOWER(:search) ORDER BY date LIMIT :limit`
-	getTaskByIdCommand    = `SELECT * FROM scheduler WHERE id = :id`
-	updateTaskCommand     = `UPDATE scheduler SET date = :date, title = :title, comment = :comment, repeat = :repeat WHERE id = :id`
-	deleteTaskCommand     = `DELETE FROM scheduler WHERE id = :id`
-	updateDateTaskCommand = `UPDATE scheduler SET date = :date WHERE id = :id`
-)
-
 func AddTask(task *Task) (int64, error) {
-	result, err := Db.Exec(addTaskCommand, sql.Named("date", task.Date), sql.Named("title",
-		task.Title), sql.Named("comment", task.Comment), sql.Named("repeat", task.Repeat))
+	result, err := pkg.DB.Exec(`INSERT INTO scheduler (date, title, comment, repeat) 
+		VALUES (:date, :title, :comment, :repeat)`, sql.Named("date", task.Date),
+		sql.Named("title", task.Title), sql.Named("comment", task.Comment),
+		sql.Named("repeat", task.Repeat))
 	if err != nil {
 		return 0, err
 	}
@@ -37,24 +25,30 @@ func AddTask(task *Task) (int64, error) {
 
 func GetTasks(search string) ([]*Task, error) {
 	var (
-		tasks []*Task
-		rows  *sql.Rows
-		err   error
+		tasks      []*Task
+		rows       *sql.Rows
+		err        error
+		searchDate time.Time
 	)
 	search = strings.TrimSpace(search)
 	if search != "" {
-		searchDate, err := time.Parse(pkg.DateFormatTemplateDD_MM_YYYY, search)
+		searchDate, err = time.Parse(pkg.DateFormatTemplateDDMMYYYY, search)
 		if err == nil {
-			rows, err = Db.Query(getTasksLimitWhereDateCommand, sql.Named("date", searchDate.Format(pkg.DateFormatTemplateYYYYMMDD)),
+			rows, err = pkg.DB.Query(`SELECT id, date, title, comment, repeat 
+			FROM scheduler WHERE date = :date ORDER BY date LIMIT :limit`,
+				sql.Named("date", searchDate.Format(pkg.DateFormatTemplateYYYYMMDD)),
 				sql.Named("limit", pkg.MaxNumTasks))
 		} else {
-			searchPattern := "%" + search + "%"
-			rows, err = Db.Query(getTasksLimitWhereTitleOrCommentCommand,
-				sql.Named("search", searchPattern), sql.Named("search", searchPattern),
+			rows, err = pkg.DB.Query(`SELECT id, date, title, comment, repeat 
+			FROM scheduler WHERE LOWER(title) LIKE CONCAT('%', LOWER(:search), '%') 
+			OR LOWER(comment) LIKE CONCAT('%', LOWER(:search), '%') ORDER BY date 
+			LIMIT :limit`, sql.Named("search", search), sql.Named("search", search),
 				sql.Named("limit", pkg.MaxNumTasks))
 		}
 	} else {
-		rows, err = Db.Query(getTasksLimitBaseCommand, sql.Named("limit", pkg.MaxNumTasks))
+		rows, err = pkg.DB.Query(`SELECT id, date, title, comment, repeat 
+			FROM scheduler ORDER BY date LIMIT :limit`,
+			sql.Named("limit", pkg.MaxNumTasks))
 	}
 	if err != nil {
 		return nil, err
@@ -81,7 +75,8 @@ func GetTasks(search string) ([]*Task, error) {
 
 func GetTask(id int) (*Task, error) {
 	var task Task
-	err := Db.QueryRow(getTaskByIdCommand, sql.Named("id", id)).Scan(&task.ID, &task.Date,
+	err := pkg.DB.QueryRow(`SELECT id, date, title, comment, repeat FROM scheduler 
+		WHERE id = :id`, sql.Named("id", id)).Scan(&task.ID, &task.Date,
 		&task.Title, &task.Comment, &task.Repeat)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -98,9 +93,11 @@ func UpdateTask(task *Task) error {
 	if err != nil {
 		return err
 	}
-	result, err := Db.Exec(updateTaskCommand, sql.Named("date", task.Date),
-		sql.Named("title", task.Title), sql.Named("comment", task.Comment),
-		sql.Named("repeat", task.Repeat), sql.Named("id", id))
+	result, err := pkg.DB.Exec(`UPDATE scheduler SET date = :date, title = :title, 
+		comment = :comment, repeat = :repeat WHERE id = :id`,
+		sql.Named("date", task.Date), sql.Named("title", task.Title),
+		sql.Named("comment", task.Comment), sql.Named("repeat", task.Repeat),
+		sql.Named("id", id))
 	if err != nil {
 		return err
 	}
@@ -120,7 +117,7 @@ func UpdateTask(task *Task) error {
 }
 
 func DeleteTask(id int) error {
-	_, err := Db.Exec(deleteTaskCommand, sql.Named("id", id))
+	_, err := pkg.DB.Exec(`DELETE FROM scheduler WHERE id = :id`, sql.Named("id", id))
 	if err != nil {
 		return err
 	}
@@ -129,7 +126,8 @@ func DeleteTask(id int) error {
 }
 
 func UpdateDateTask(nextDate string, id int) error {
-	result, err := Db.Exec(updateDateTaskCommand, sql.Named("date", nextDate), sql.Named("id", id))
+	result, err := pkg.DB.Exec(`UPDATE scheduler SET date = :date WHERE id = :id`,
+		sql.Named("date", nextDate), sql.Named("id", id))
 	if err != nil {
 		return err
 	}

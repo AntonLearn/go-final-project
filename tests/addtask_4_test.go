@@ -65,6 +65,7 @@ func postJSON(apipath string, values map[string]any, method string) (map[string]
 		m   map[string]any
 		err error
 	)
+
 	body, err := requestJSON(apipath, values, method)
 	if err != nil {
 		return nil, err
@@ -163,7 +164,7 @@ func TestAddTask(t *testing.T) {
 	check()
 	if FullNextDate {
 		tbl = []task{
-			//{"20240129", "Сходить в магазин", "", "w 1,3,5"},
+			{"20240129", "Сходить в магазин", "", "w 1,3,5"},
 		}
 		check()
 	}

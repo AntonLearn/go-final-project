@@ -1,3 +1,4 @@
+// Package tests
 package tests
 
 var (
@@ -5,5 +6,5 @@ var (
 	DBFile       = "../scheduler.db"
 	FullNextDate = true
 	Search       = true
-	Token        = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZF9oYXNoIjoiY2JmNTNhMWMifQ.L-X36_U944AVzEDyIAX-YZRUO176X18dZUojw7hw8WA`
+	Token        = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXNzd29yZF9oYXNoIjoiMzVjMjQ2ZDUifQ.yECljV6Z-rWnVnrOZSsmhidWXNQH3qmqreIS1QVKFjE`
 )

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
@@ -94,12 +93,17 @@ func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func signinHandler(w http.ResponseWriter, r *http.Request) {
+	if pkg.ExpectedPassword == "" {
+		pkg.Logger.Println("Empty password. Dummy-token was successfully created and sent by server")
+		pkg.Logger.Println("Login completed successfully")
+		writeJSON(w, map[string]string{"token": "dummy-token"})
+		return
+	}
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	defer r.Body.Close()
 	var request struct {
 		Password string `json:"password"`
 	}
@@ -108,17 +112,12 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 		writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	expectedPassword := os.Getenv("TODO_PASSWORD")
-	if expectedPassword == "" {
-		writeJSON(w, map[string]string{"token": "dummy-token"})
-		return
-	}
-	if request.Password != expectedPassword {
+	if request.Password != pkg.ExpectedPassword {
 		writeErrorJSON(w, http.StatusUnauthorized, "Invalid password")
 		return
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		jwt.MapClaims{"password_hash": HashPassword(expectedPassword)})
+		jwt.MapClaims{"password_hash": pkg.ExpectedHashPassword})
 	tokenString, err := token.SignedString(pkg.JwtKey)
 	if err != nil {
 		writeErrorJSON(w, http.StatusInternalServerError, "Internal server error")
@@ -126,12 +125,19 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	writeJSON(w, map[string]string{"token": tokenString})
 	pkg.Logger.Println("Correct password. Token was successfully created and sent by server")
+	pkg.Logger.Println("Login completed successfully")
+}
+
+func signoutHandler(w http.ResponseWriter, r *http.Request) {
+	resetCookieToken(w)
+	pkg.Logger.Println("Redirection to login page completed successfully")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func authMiddleware(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		expectedPassword := os.Getenv("TODO_PASSWORD")
-		if expectedPassword == "" {
+		if pkg.ExpectedPassword == "" {
+			pkg.Logger.Println("Authentication completed successfully")
 			handler(w, r)
 			return
 		}
@@ -143,7 +149,7 @@ func authMiddleware(handler http.HandlerFunc) http.HandlerFunc {
 		tokenString := cookie.Value
 		claims := jwt.MapClaims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims,
-			func(token *jwt.Token) (interface{}, error) {
+			func(token *jwt.Token) (any, error) {
 				return pkg.JwtKey, nil
 			})
 		if err != nil || !token.Valid {
@@ -160,11 +166,34 @@ func authMiddleware(handler http.HandlerFunc) http.HandlerFunc {
 			writeErrorJSON(w, http.StatusUnauthorized, fmt.Sprintf("authentication required: password_hash has unexpected type: %T but password_hash must be a string", value))
 			return
 		}
-		if storedHash != HashPassword(expectedPassword) {
+		if storedHash != pkg.ExpectedHashPassword {
 			writeErrorJSON(w, http.StatusUnauthorized, "authentication required: password verification failed. Stored hash does not match current password")
 			return
 		}
 		pkg.Logger.Println("Authentication completed successfully")
 		handler(w, r)
 	}
+}
+
+func reloadHomePageHandler(dir string) http.Handler {
+	return resetCookieMiddleware(http.FileServer(http.Dir(dir)))
+}
+
+func resetCookieMiddleware(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		resetCookieToken(w)
+		pkg.Logger.Println("Login page has been reloaded successfully")
+		handler.ServeHTTP(w, r)
+	})
+}
+
+func resetCookieToken(w http.ResponseWriter) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Expires:  time.Now().Add(-1 * time.Hour),
+		Path:     "/",
+		SameSite: http.SameSiteDefaultMode,
+	})
+	pkg.Logger.Println("Token in cookies was deleted successfully")
+	pkg.Logger.Println("Logout completed successfully")
 }
