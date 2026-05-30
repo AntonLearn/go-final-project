@@ -1,3 +1,4 @@
+// Package db
 package db
 
 import (
@@ -6,7 +7,7 @@ import (
 
 	_ "modernc.org/sqlite"
 
-	"github.com/antonlearn/go-final-project/pkg"
+	"github.com/antonlearn/go-final-project/pkg/config"
 )
 
 const initCommand = `
@@ -21,22 +22,23 @@ CREATE INDEX idx_date ON scheduler(date);
 `
 
 func dbInit() error {
-	if _, err := pkg.DB.Exec(initCommand); err != nil {
+	if _, err := config.Config.DBConnect.Exec(initCommand); err != nil {
 		return err
 	}
-	pkg.Logger.Println("Scheduler table and its index file have been successfully created")
+	config.Config.Logger.Println("Scheduler table and its index file have been successfully created")
 	return nil
 }
 
 func OpenDB() error {
 	// Checking exists of db
 	var dbNotExists bool
-	if _, err := os.Stat(pkg.DBFile); err != nil {
+	if _, err := os.Stat(config.Config.DBPath); err != nil {
 		dbNotExists = true
 	}
 	// Opening db
 	var err error
-	if pkg.DB, err = sql.Open("sqlite", pkg.DBFile); err != nil {
+	config.Config.DBConnect, err = sql.Open("sqlite", config.Config.DBPath)
+	if err != nil {
 		return err
 	}
 	if dbNotExists {
@@ -45,6 +47,6 @@ func OpenDB() error {
 			return err
 		}
 	}
-	pkg.Logger.Printf("Database %s was opened successfully\n", pkg.DBFile)
+	config.Config.Logger.Printf("Database %s was opened successfully\n", config.Config.DBFileName)
 	return nil
 }

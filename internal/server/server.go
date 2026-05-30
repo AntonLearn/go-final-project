@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/antonlearn/go-final-project/pkg"
-	"github.com/antonlearn/go-final-project/pkg/api"
+	"github.com/antonlearn/go-final-project/internal/api"
+	"github.com/antonlearn/go-final-project/pkg/config"
 )
 
 type Server struct {
@@ -15,17 +15,17 @@ type Server struct {
 	HTTPServer http.Server
 }
 
-func NewServer(l *log.Logger) *Server {
+func NewServer() *Server {
 	// Creating router
 	mux := http.NewServeMux()
 	api.InitHandlers(mux)
 	// Returning server instance
 	return &Server{
-		Log: l,
+		Log: config.Config.Logger,
 		HTTPServer: http.Server{
-			Addr:         ":" + pkg.Port,
+			Addr:         ":" + config.Config.Port,
 			Handler:      mux,
-			ErrorLog:     l,
+			ErrorLog:     config.Config.Logger,
 			ReadTimeout:  5 * time.Second,
 			WriteTimeout: 10 * time.Second,
 			IdleTimeout:  15 * time.Second,

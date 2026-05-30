@@ -1,12 +1,12 @@
+// Package api
 package api
 
 import (
 	"encoding/json"
 	"fmt"
-	"hash/crc32"
 	"net/http"
 
-	"github.com/antonlearn/go-final-project/pkg"
+	"github.com/antonlearn/go-final-project/pkg/config"
 )
 
 func writeErrorJSON(w http.ResponseWriter, status int, errorMessage string) {
@@ -15,10 +15,10 @@ func writeErrorJSON(w http.ResponseWriter, status int, errorMessage string) {
 	if err := json.NewEncoder(w).Encode(map[string]string{"error": errorMessage}); err != nil {
 		errorsString := fmt.Sprintf("%s: %s", errorMessage, err.Error())
 		http.Error(w, errorsString, http.StatusInternalServerError)
-		pkg.Logger.Println(errorsString)
+		config.Config.Logger.Println(errorsString)
 		return
 	}
-	pkg.Logger.Println(errorMessage)
+	config.Config.Logger.Println(errorMessage)
 }
 
 func writeJSON(w http.ResponseWriter, data any) {
@@ -33,8 +33,4 @@ func writeJSON(w http.ResponseWriter, data any) {
 		writeErrorJSON(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-}
-
-func HashPassword() {
-	pkg.ExpectedHashPassword = fmt.Sprintf("%08x", crc32.ChecksumIEEE([]byte(pkg.ExpectedPassword)))
 }

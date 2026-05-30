@@ -1,3 +1,4 @@
+// Package api
 package api
 
 import (
@@ -8,29 +9,30 @@ import (
 	"strings"
 	"time"
 
-	"github.com/antonlearn/go-final-project/pkg"
-	"github.com/antonlearn/go-final-project/pkg/db"
+	"github.com/antonlearn/go-final-project/internal/db"
+	"github.com/antonlearn/go-final-project/pkg/format"
 )
 
-var ErrEmpty = errors.New("line with repetition rule: empty line")
+var errEmpty = errors.New("line with repetition rule: empty line")
 
 func checkDate(task *db.Task) error {
-	nowDateStr := time.Now().Format(pkg.DateFormatTemplateYYYYMMDD)
+
+	nowDateStr := time.Now().Format(format.DateFormatTemplateYYYYMMDD)
 	if task.Date == "" {
 		task.Date = nowDateStr
 	}
-	taskDate, err := time.Parse(pkg.DateFormatTemplateYYYYMMDD, task.Date)
+	taskDate, err := time.Parse(format.DateFormatTemplateYYYYMMDD, task.Date)
 	if err != nil {
 		return err
 	}
-	nowDate, err := time.Parse(pkg.DateFormatTemplateYYYYMMDD, nowDateStr)
+	nowDate, err := time.Parse(format.DateFormatTemplateYYYYMMDD, nowDateStr)
 	if err != nil {
 		return err
 	}
 	var nextDateStr string
 	nextDateStr, err = NextDate(nowDate, task.Date, task.Repeat)
 	if firstDateMoreSecondDate(nowDate, taskDate) {
-		if errors.Is(err, ErrEmpty) {
+		if errors.Is(err, errEmpty) {
 			task.Date = nowDateStr
 			return nil
 		} else {
@@ -59,9 +61,9 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 		errUnsupportedFormat = fmt.Errorf("line with repetition rule %s: unsupported format", repeat)
 	)
 	if repeat == "" {
-		return "", ErrEmpty
+		return "", errEmpty
 	}
-	resultDate, err := time.Parse(pkg.DateFormatTemplateYYYYMMDD, dstart)
+	resultDate, err := time.Parse(format.DateFormatTemplateYYYYMMDD, dstart)
 	if err != nil {
 		return "", err
 	}
@@ -84,7 +86,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 				break
 			}
 		}
-		return resultDate.Format(pkg.DateFormatTemplateYYYYMMDD), nil
+		return resultDate.Format(format.DateFormatTemplateYYYYMMDD), nil
 	case "d":
 		const maxD = 400
 		if len(repeats) < 2 {
@@ -109,7 +111,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 				break
 			}
 		}
-		return resultDate.Format(pkg.DateFormatTemplateYYYYMMDD), nil
+		return resultDate.Format(format.DateFormatTemplateYYYYMMDD), nil
 	case "w":
 		if firstDateMoreSecondDate(now, resultDate) {
 			resultDate = now
@@ -142,7 +144,7 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 		for {
 			resultDate = resultDate.AddDate(0, 0, 1)
 			if slices.Contains(weekdaysName, resultDate.Weekday()) {
-				return resultDate.Format(pkg.DateFormatTemplateYYYYMMDD), nil
+				return resultDate.Format(format.DateFormatTemplateYYYYMMDD), nil
 			}
 		}
 	case "m":
@@ -199,16 +201,16 @@ func NextDate(now time.Time, dstart string, repeat string) (string, error) {
 				isPenultimateDay = true
 			}
 			if slices.Contains(monthdays, penultimateDayOfMonth) && isPenultimateDay {
-				return resultDate.Format(pkg.DateFormatTemplateYYYYMMDD), nil
+				return resultDate.Format(format.DateFormatTemplateYYYYMMDD), nil
 			}
 			if slices.Contains(monthdays, lastDayOfMonth) && isLastDay {
-				return resultDate.Format(pkg.DateFormatTemplateYYYYMMDD), nil
+				return resultDate.Format(format.DateFormatTemplateYYYYMMDD), nil
 			}
 			if slices.Contains(monthdays, resultDate.Day()) && !monthRepeatsNotApply {
-				return resultDate.Format(pkg.DateFormatTemplateYYYYMMDD), nil
+				return resultDate.Format(format.DateFormatTemplateYYYYMMDD), nil
 			}
 			if slices.Contains(monthdays, resultDate.Day()) && slices.Contains(months, resultDate.Month()) {
-				return resultDate.Format(pkg.DateFormatTemplateYYYYMMDD), nil
+				return resultDate.Format(format.DateFormatTemplateYYYYMMDD), nil
 			}
 		}
 	default:

@@ -1,3 +1,4 @@
+// Package api
 package api
 
 import (
@@ -10,8 +11,9 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 
-	"github.com/antonlearn/go-final-project/pkg"
-	"github.com/antonlearn/go-final-project/pkg/db"
+	"github.com/antonlearn/go-final-project/internal/db"
+	"github.com/antonlearn/go-final-project/pkg/config"
+	"github.com/antonlearn/go-final-project/pkg/format"
 )
 
 func nextDayHandler(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +27,7 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 	if nowStr == "" {
 		now = time.Now().Truncate(24 * time.Hour)
 	} else {
-		now, err = time.Parse(pkg.DateFormatTemplateYYYYMMDD, nowStr)
+		now, err = time.Parse(format.DateFormatTemplateYYYYMMDD, nowStr)
 		if err != nil {
 			writeErrorJSON(w, http.StatusBadRequest, err.Error())
 			return
@@ -38,7 +40,7 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(nextDate))
-	pkg.Logger.Printf("Next task date %s has been successfully generated and sent by server\n", nextDate)
+	config.Config.Logger.Printf("Next task date %s has been successfully generated and sent by server\n", nextDate)
 }
 
 func tasksHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +51,7 @@ func tasksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, map[string]any{"tasks": tasks})
-	pkg.Logger.Printf("List of upcoming tasks %v has been created and sent by server\n", tasks)
+	config.Config.Logger.Printf("List of upcoming tasks %v has been created and sent by server\n", tasks)
 }
 
 func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +77,7 @@ func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		writeJSON(w, emptyMap)
-		pkg.Logger.Println("Task was removed from list and processed by server as completed")
+		config.Config.Logger.Println("Task was removed from list and processed by server as completed")
 	} else {
 		nextDate, err := NextDate(time.Now(), task.Date, task.Repeat)
 		if err != nil {
@@ -88,14 +90,14 @@ func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		writeJSON(w, emptyMap)
-		pkg.Logger.Printf("Task was processed by server as completed and its date was changed to new %s\n", nextDate)
+		config.Config.Logger.Printf("Task was processed by server as completed and its date was changed to new %s\n", nextDate)
 	}
 }
 
 func signinHandler(w http.ResponseWriter, r *http.Request) {
-	if pkg.ExpectedPassword == "" {
-		pkg.Logger.Println("Empty password. Dummy-token was successfully created and sent by server")
-		pkg.Logger.Println("Login completed successfully")
+	if config.Config.ExpectedPassword == "" {
+		config.Config.Logger.Println("Empty password. Dummy-token was successfully created and sent by server")
+		config.Config.Logger.Println("Login completed successfully")
 		writeJSON(w, map[string]string{"token": "dummy-token"})
 		return
 	}
@@ -112,32 +114,32 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 		writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	if request.Password != pkg.ExpectedPassword {
+	if request.Password != config.Config.ExpectedPassword {
 		writeErrorJSON(w, http.StatusUnauthorized, "Invalid password")
 		return
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		jwt.MapClaims{"password_hash": pkg.ExpectedHashPassword})
-	tokenString, err := token.SignedString(pkg.JwtKey)
+		jwt.MapClaims{"password_hash": config.Config.ExpectedHash})
+	tokenString, err := token.SignedString(config.Config.JwtKey)
 	if err != nil {
 		writeErrorJSON(w, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 	writeJSON(w, map[string]string{"token": tokenString})
-	pkg.Logger.Println("Correct password. Token was successfully created and sent by server")
-	pkg.Logger.Println("Login completed successfully")
+	config.Config.Logger.Println("Correct password. Token was successfully created and sent by server")
+	config.Config.Logger.Println("Login completed successfully")
 }
 
 func signoutHandler(w http.ResponseWriter, r *http.Request) {
 	resetCookieToken(w)
-	pkg.Logger.Println("Redirection to login page completed successfully")
+	config.Config.Logger.Println("Redirection to login page completed successfully")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func authMiddleware(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if pkg.ExpectedPassword == "" {
-			pkg.Logger.Println("Authentication completed successfully")
+		if config.Config.ExpectedPassword == "" {
+			config.Config.Logger.Println("Authentication completed successfully")
 			handler(w, r)
 			return
 		}
@@ -150,7 +152,7 @@ func authMiddleware(handler http.HandlerFunc) http.HandlerFunc {
 		claims := jwt.MapClaims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims,
 			func(token *jwt.Token) (any, error) {
-				return pkg.JwtKey, nil
+				return config.Config.JwtKey, nil
 			})
 		if err != nil || !token.Valid {
 			writeErrorJSON(w, http.StatusUnauthorized, "authentication required: "+err.Error())
@@ -166,23 +168,23 @@ func authMiddleware(handler http.HandlerFunc) http.HandlerFunc {
 			writeErrorJSON(w, http.StatusUnauthorized, fmt.Sprintf("authentication required: password_hash has unexpected type: %T but password_hash must be a string", value))
 			return
 		}
-		if storedHash != pkg.ExpectedHashPassword {
+		if storedHash != config.Config.ExpectedHash {
 			writeErrorJSON(w, http.StatusUnauthorized, "authentication required: password verification failed. Stored hash does not match current password")
 			return
 		}
-		pkg.Logger.Println("Authentication completed successfully")
+		config.Config.Logger.Println("Authentication completed successfully")
 		handler(w, r)
 	}
 }
 
-func reloadHomePageHandler(dir string) http.Handler {
-	return resetCookieMiddleware(http.FileServer(http.Dir(dir)))
+func reloadHomePageHandler() http.Handler {
+	return resetCookieMiddleware(http.FileServer(http.Dir(config.Config.WebDirPath)))
 }
 
 func resetCookieMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		resetCookieToken(w)
-		pkg.Logger.Println("Login page has been reloaded successfully")
+		config.Config.Logger.Println("Login page has been reloaded successfully")
 		handler.ServeHTTP(w, r)
 	})
 }
@@ -194,6 +196,6 @@ func resetCookieToken(w http.ResponseWriter) {
 		Path:     "/",
 		SameSite: http.SameSiteDefaultMode,
 	})
-	pkg.Logger.Println("Token in cookies was deleted successfully")
-	pkg.Logger.Println("Logout completed successfully")
+	config.Config.Logger.Println("Token in cookies was deleted successfully")
+	config.Config.Logger.Println("Logout completed successfully")
 }

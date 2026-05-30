@@ -55,7 +55,7 @@
         -p 7540:7540 -e TODO_PORT=7540 -e TODO_DBFILE=scheduler.db \
         -e TODO_PASSWORD=password todo-scheduler
 
-Для запуска тестов из директории планировщика следует выполнить команду: go test ./tests -count=1.
+Для запуска тестов из директории планировщика следует выполнить команду: go test ./tests -count=1
 Реализована возможность тестирования всего функционала планировщика, поэтому переменные в файле ./tests/settings.go инициализированы следующими значениями:
 - FullNextDate = true
 - Search = true

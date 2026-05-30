@@ -1,3 +1,4 @@
+// Package api
 package api
 
 import (
@@ -7,8 +8,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/antonlearn/go-final-project/pkg"
-	"github.com/antonlearn/go-final-project/pkg/db"
+	"github.com/antonlearn/go-final-project/internal/db"
+	"github.com/antonlearn/go-final-project/pkg/config"
 )
 
 var emptyMap = make(map[string]any, 0)
@@ -40,7 +41,7 @@ func addTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, map[string]string{"id": fmt.Sprint(id)})
-	pkg.Logger.Println("Task was successfully added and sent by server")
+	config.Config.Logger.Println("Task was successfully added and sent by server")
 }
 
 func getTaskHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,7 +61,7 @@ func getTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, task)
-	pkg.Logger.Println("Task was successfully recieved and sent by server")
+	config.Config.Logger.Println("Task was successfully recieved and sent by server")
 }
 
 func updateTaskHandler(w http.ResponseWriter, r *http.Request) {
@@ -89,7 +90,7 @@ func updateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, emptyMap)
-	pkg.Logger.Println("Task has been successfully updated and sent by server")
+	config.Config.Logger.Println("Task has been successfully updated and sent by server")
 }
 
 func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
@@ -109,5 +110,5 @@ func deleteTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, emptyMap)
-	pkg.Logger.Println("Task was successfully deleted by server")
+	config.Config.Logger.Println("Task was successfully deleted by server")
 }

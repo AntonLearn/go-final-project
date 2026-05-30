@@ -4,17 +4,16 @@ package api
 import (
 	"net/http"
 
-	"github.com/antonlearn/go-final-project/pkg"
+	"github.com/antonlearn/go-final-project/pkg/config"
 )
 
 func InitHandlers(mux *http.ServeMux) {
-	const webDir = "./web" // Directory with frontend files
 	// Creating handler for /api/signin
 	mux.HandleFunc("POST /api/signin", signinHandler)
 	// Creating handler for /api/signout
 	mux.HandleFunc("GET /api/signout", signoutHandler)
 	// Creating handler for root path and all subpaths of webDir
-	mux.Handle("GET /", reloadHomePageHandler(webDir))
+	mux.Handle("GET /", reloadHomePageHandler())
 	// Creating handler for api/nextdate
 	mux.HandleFunc("GET /api/nextdate", nextDayHandler)
 	// Creating handler for api/tasks
@@ -26,5 +25,5 @@ func InitHandlers(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/task", authMiddleware(getTaskHandler))
 	mux.HandleFunc("PUT /api/task", authMiddleware(updateTaskHandler))
 	mux.HandleFunc("DELETE /api/task", authMiddleware(deleteTaskHandler))
-	pkg.Logger.Println("Handler initialization completed successfully")
+	config.Config.Logger.Println("Handler initialization completed successfully")
 }
