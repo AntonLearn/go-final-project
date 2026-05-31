@@ -13,6 +13,14 @@ import (
 	"github.com/antonlearn/go-final-project/pkg/format"
 )
 
+type Task struct {
+	ID      string `json:"id"`
+	Date    string `json:"date"`
+	Title   string `json:"title"`
+	Comment string `json:"comment"`
+	Repeat  string `json:"repeat"`
+}
+
 func AddTask(task *Task) (int64, error) {
 	result, err := config.Config.DBConnect.Exec(`INSERT INTO scheduler (date, title, comment, repeat) 
 		VALUES (:date, :title, :comment, :repeat)`, sql.Named("date", task.Date),

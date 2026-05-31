@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/antonlearn/go-final-project/internal/api"
 	"github.com/antonlearn/go-final-project/pkg/config"
 )
 
@@ -18,7 +17,6 @@ type Server struct {
 func NewServer() *Server {
 	// Creating router
 	mux := http.NewServeMux()
-	api.InitHandlers(mux)
 	// Returning server instance
 	return &Server{
 		Log: config.Config.Logger,

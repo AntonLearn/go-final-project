@@ -1,5 +1,5 @@
-// Package api
-package api
+// Package handlers
+package handlers
 
 import (
 	"encoding/json"
@@ -8,6 +8,8 @@ import (
 
 	"github.com/antonlearn/go-final-project/pkg/config"
 )
+
+var emptyMap = make(map[string]any, 0)
 
 func writeErrorJSON(w http.ResponseWriter, status int, errorMessage string) {
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

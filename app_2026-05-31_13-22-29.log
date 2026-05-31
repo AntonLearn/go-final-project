@@ -1,0 +1,336 @@
+LOG: 2026/05/31 18:22:29 main.go:26: Application started successfully
+LOG: 2026/05/31 18:22:29 db.go:39: Database scheduler.db was opened successfully
+LOG: 2026/05/31 18:22:29 main.go:33: Database scheduler.db is ready for use
+LOG: 2026/05/31 18:22:29 init_handlers.go:28: Handler initialization completed successfully
+LOG: 2026/05/31 18:22:29 main.go:45: Server starting on http://localhost::7540
+LOG: 2026/05/31 18:22:37 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:22:37 task.go:82: List of upcoming tasks [0xc00021a140 0xc00021a190 0xc00021a1e0 0xc00021a230 0xc00021a280 0xc00021a2d0] has been successfully created
+LOG: 2026/05/31 18:22:37 tasks_handler.go:19: List of upcoming tasks [0xc00021a140 0xc00021a190 0xc00021a1e0 0xc00021a230 0xc00021a280 0xc00021a2d0] has been created and sent by server
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:24:03 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:24:12 utils.go:23: line with repetition rule: empty line
+LOG: 2026/05/31 18:24:12 utils.go:23: line with repetition rule k 34: unsupported format
+LOG: 2026/05/31 18:24:12 utils.go:23: line with repetition rule ooops: unsupported format
+LOG: 2026/05/31 18:24:12 utils.go:23: parsing time "15000156": day out of range
+LOG: 2026/05/31 18:24:12 utils.go:23: parsing time "ooops" as "20060102": cannot parse "ooops" as "2006"
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240220 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20260701 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20250101 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20241231 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20250301 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20250301 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 utils.go:23: line with repetition rule d: too few parameters
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240127 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240209 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240303 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 utils.go:23: line with repetition rule d and parameter 401: maximum 400 allowed interval in days has been exceeded
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240130 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240229 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240213 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 utils.go:23: line with repetition rule m and parameter 40,11,19: invalid day of the month ordinal number
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240205 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240207 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240531 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240810 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240507 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240201 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240131 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240228 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 utils.go:23: line with repetition rule m and parameter -2,-3: invalid day of the month ordinal number
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240330 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240218 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240129 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240128 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 next_day_handler.go:37: Next task date 20240201 has been successfully generated and sent by server
+LOG: 2026/05/31 18:24:12 utils.go:23: line with repetition rule w and parameter 8,4,5: maximum 7 number of days in a week has been exceeded
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 utils.go:23: Invalid task title: it's required and cannot be empty
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 utils.go:23: parsing time "20240192": day out of range
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 utils.go:23: parsing time "28.01.2024" as "20060102": cannot parse "28.01.2024" as "2006"
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 utils.go:23: line with repetition rule w: too few parameters
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 utils.go:23: line with repetition rule ooops: unsupported format
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 task.go:32: Task &{ 20260531 Заголовок  } was added successfully
+LOG: 2026/05/31 18:24:49 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 task.go:32: Task &{ 20260531 Сделать что-нибудь Хорошо отдохнуть } was added successfully
+LOG: 2026/05/31 18:24:49 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 task.go:32: Task &{ 20260606 Уроки  d 10} was added successfully
+LOG: 2026/05/31 18:24:49 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 task.go:32: Task &{ 20270102 Отдых в Сочи На лыжах y} was added successfully
+LOG: 2026/05/31 18:24:49 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 task.go:32: Task &{ 20260531 Фитнес  d 1} was added successfully
+LOG: 2026/05/31 18:24:49 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 task.go:32: Task &{ 20260531 Шмитнес  } was added successfully
+LOG: 2026/05/31 18:24:49 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:24:49 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:24:49 task.go:32: Task &{ 20260601 Сходить в магазин  w 1,3,5} was added successfully
+LOG: 2026/05/31 18:24:49 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 tasks_handler.go:19: List of upcoming tasks [] has been created and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:32: Task &{ 20260531 Просмотр фильма с попкорном } was added successfully
+LOG: 2026/05/31 18:25:15 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:32: Task &{ 20260601 Сходить в бассейн  } was added successfully
+LOG: 2026/05/31 18:25:15 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:32: Task &{ 20260601 Оплатить коммуналку  d 30} was added successfully
+LOG: 2026/05/31 18:25:15 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:82: List of upcoming tasks [0xc0000ed5e0 0xc0000ed630 0xc0000ed680] has been successfully created
+LOG: 2026/05/31 18:25:15 tasks_handler.go:19: List of upcoming tasks [0xc0000ed5e0 0xc0000ed630 0xc0000ed680] has been created and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:32: Task &{ 20260603 Поплавать Бассейн с тренером d 7} was added successfully
+LOG: 2026/05/31 18:25:15 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:32: Task &{ 20260603 Позвонить в УК Разобраться с горячей водой } was added successfully
+LOG: 2026/05/31 18:25:15 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:32: Task &{ 20260603 Встретится с Васей в 18:00 } was added successfully
+LOG: 2026/05/31 18:25:15 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:82: List of upcoming tasks [0xc0000eda40 0xc0000eda90 0xc0000edae0 0xc0000edb30 0xc0000edb80 0xc0000edbd0] has been successfully created
+LOG: 2026/05/31 18:25:15 tasks_handler.go:19: List of upcoming tasks [0xc0000eda40 0xc0000eda90 0xc0000edae0 0xc0000edb30 0xc0000edb80 0xc0000edbd0] has been created and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:82: List of upcoming tasks [0xc00021b7c0] has been successfully created
+LOG: 2026/05/31 18:25:15 tasks_handler.go:19: List of upcoming tasks [0xc00021b7c0] has been created and sent by server
+LOG: 2026/05/31 18:25:15 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:15 task.go:82: List of upcoming tasks [0xc00021ba40 0xc00021ba90 0xc00021bae0] has been successfully created
+LOG: 2026/05/31 18:25:15 tasks_handler.go:19: List of upcoming tasks [0xc00021ba40 0xc00021ba90 0xc00021bae0] has been created and sent by server
+LOG: 2026/05/31 18:25:31 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:31 task.go:32: Task &{ 20260531 Заказать пиццу в 17:00 } was added successfully
+LOG: 2026/05/31 18:25:31 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:31 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:31 utils.go:23: strconv.Atoi: parsing "": invalid syntax
+LOG: 2026/05/31 18:25:31 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:31 utils.go:23: strconv.Atoi: parsing "abc": invalid syntax
+LOG: 2026/05/31 18:25:31 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:31 utils.go:23: request parameters: incorrect ID 7645346343 for updating task
+LOG: 2026/05/31 18:25:31 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:31 utils.go:23: Invalid task title: it's required and cannot be empty
+LOG: 2026/05/31 18:25:31 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:31 utils.go:23: parsing time "20240192": day out of range
+LOG: 2026/05/31 18:25:31 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:31 utils.go:23: parsing time "28.01.2024" as "20060102": cannot parse "28.01.2024" as "2006"
+LOG: 2026/05/31 18:25:31 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:31 utils.go:23: line with repetition rule ooops: unsupported format
+LOG: 2026/05/31 18:25:31 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:31 task.go:122: Task &{49 20260531 Заказать хинкали в 18:00 d 7} with ID 49 successfully updated
+LOG: 2026/05/31 18:25:31 update_task_handler.go:40: Task has been successfully updated and sent by server
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 utils.go:23: Invalid task title: it's required and cannot be empty
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 utils.go:23: parsing time "20240192": day out of range
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 utils.go:23: parsing time "28.01.2024" as "20060102": cannot parse "28.01.2024" as "2006"
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 utils.go:23: line with repetition rule w: too few parameters
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 utils.go:23: line with repetition rule ooops: unsupported format
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 task.go:32: Task &{ 20260531 Заголовок  } was added successfully
+LOG: 2026/05/31 18:25:47 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 task.go:32: Task &{ 20260531 Сделать что-нибудь Хорошо отдохнуть } was added successfully
+LOG: 2026/05/31 18:25:47 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 task.go:32: Task &{ 20260606 Уроки  d 10} was added successfully
+LOG: 2026/05/31 18:25:47 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 task.go:32: Task &{ 20270102 Отдых в Сочи На лыжах y} was added successfully
+LOG: 2026/05/31 18:25:47 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 task.go:32: Task &{ 20260531 Фитнес  d 1} was added successfully
+LOG: 2026/05/31 18:25:47 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 task.go:32: Task &{ 20260531 Шмитнес  } was added successfully
+LOG: 2026/05/31 18:25:47 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:47 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:47 task.go:32: Task &{ 20260601 Сходить в магазин  w 1,3,5} was added successfully
+LOG: 2026/05/31 18:25:47 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:26: Token in cookies was deleted successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:27: Logout completed successfully
+LOG: 2026/05/31 18:25:47 reset_cookie_middleware_handler.go.go:14: Login page has been reloaded successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: line with repetition rule: empty line
+LOG: 2026/05/31 18:25:48 utils.go:23: line with repetition rule k 34: unsupported format
+LOG: 2026/05/31 18:25:48 utils.go:23: line with repetition rule ooops: unsupported format
+LOG: 2026/05/31 18:25:48 utils.go:23: parsing time "15000156": day out of range
+LOG: 2026/05/31 18:25:48 utils.go:23: parsing time "ooops" as "20060102": cannot parse "ooops" as "2006"
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240220 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20260701 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20250101 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20241231 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20250301 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20250301 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 utils.go:23: line with repetition rule d: too few parameters
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240127 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240209 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240303 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 utils.go:23: line with repetition rule d and parameter 401: maximum 400 allowed interval in days has been exceeded
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240130 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240229 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240213 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 utils.go:23: line with repetition rule m and parameter 40,11,19: invalid day of the month ordinal number
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240205 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240207 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240531 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240810 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240507 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240201 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240131 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240228 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 utils.go:23: line with repetition rule m and parameter -2,-3: invalid day of the month ordinal number
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240330 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240218 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240129 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240128 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 next_day_handler.go:37: Next task date 20240201 has been successfully generated and sent by server
+LOG: 2026/05/31 18:25:48 utils.go:23: line with repetition rule w and parameter 8,4,5: maximum 7 number of days in a week has been exceeded
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260531 Созвон в 16:00 Обсуждение планов d 5} was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: request parameters: no task ID specified
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:97: Task {58 20260531 Созвон в 16:00 Обсуждение планов d 5} with ID 58 received successfully
+LOG: 2026/05/31 18:25:48 get_task_handler.go:29: Task was successfully recieved and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260531 Заказать пиццу в 17:00 } was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: strconv.Atoi: parsing "": invalid syntax
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: strconv.Atoi: parsing "abc": invalid syntax
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: request parameters: incorrect ID 7645346343 for updating task
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: Invalid task title: it's required and cannot be empty
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: parsing time "20240192": day out of range
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: parsing time "28.01.2024" as "20060102": cannot parse "28.01.2024" as "2006"
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: line with repetition rule ooops: unsupported format
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:122: Task &{59 20260531 Заказать хинкали в 18:00 d 7} with ID 59 successfully updated
+LOG: 2026/05/31 18:25:48 update_task_handler.go:40: Task has been successfully updated and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260531 Свести баланс  } was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:97: Task {60 20260531 Свести баланс  } with ID 60 received successfully
+LOG: 2026/05/31 18:25:48 task.go:134: Task with ID 60 successfully deleted
+LOG: 2026/05/31 18:25:48 task_done_handler.go:37: Task was removed from list and processed by server as completed
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: request parameters: no task with ID 60
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260531 Проверить работу /api/task/done  d 3} was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:97: Task {61 20260531 Проверить работу /api/task/done  d 3} with ID 61 received successfully
+LOG: 2026/05/31 18:25:48 task.go:152: Task date with ID 61 successfully updated
+LOG: 2026/05/31 18:25:48 task_done_handler.go:50: Task was processed by server as completed and its date was changed to new 20260603
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:97: Task {61 20260603 Проверить работу /api/task/done  d 3} with ID 61 received successfully
+LOG: 2026/05/31 18:25:48 task.go:152: Task date with ID 61 successfully updated
+LOG: 2026/05/31 18:25:48 task_done_handler.go:50: Task was processed by server as completed and its date was changed to new 20260606
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:97: Task {61 20260606 Проверить работу /api/task/done  d 3} with ID 61 received successfully
+LOG: 2026/05/31 18:25:48 task.go:152: Task date with ID 61 successfully updated
+LOG: 2026/05/31 18:25:48 task_done_handler.go:50: Task was processed by server as completed and its date was changed to new 20260609
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260531 Временная задача  d 3} was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:134: Task with ID 62 successfully deleted
+LOG: 2026/05/31 18:25:48 delete_task_handler.go:29: Task was successfully deleted by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: request parameters: no task with ID 62
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: request parameters: no task ID specified
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 utils.go:23: strconv.Atoi: parsing "wjhgese": invalid syntax
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 tasks_handler.go:19: List of upcoming tasks [] has been created and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260531 Просмотр фильма с попкорном } was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260601 Сходить в бассейн  } was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260601 Оплатить коммуналку  d 30} was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:82: List of upcoming tasks [0xc0001f1b80 0xc0001f1bd0 0xc0001f1c20] has been successfully created
+LOG: 2026/05/31 18:25:48 tasks_handler.go:19: List of upcoming tasks [0xc0001f1b80 0xc0001f1bd0 0xc0001f1c20] has been created and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260603 Поплавать Бассейн с тренером d 7} was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260603 Позвонить в УК Разобраться с горячей водой } was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:32: Task &{ 20260603 Встретится с Васей в 18:00 } was added successfully
+LOG: 2026/05/31 18:25:48 add_task_handler.go:42: Task was successfully added and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:82: List of upcoming tasks [0xc0002781e0 0xc000278230 0xc000278280 0xc0002782d0 0xc000278320 0xc000278370] has been successfully created
+LOG: 2026/05/31 18:25:48 tasks_handler.go:19: List of upcoming tasks [0xc0002781e0 0xc000278230 0xc000278280 0xc0002782d0 0xc000278320 0xc000278370] has been created and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:82: List of upcoming tasks [0xc0002e7ae0] has been successfully created
+LOG: 2026/05/31 18:25:48 tasks_handler.go:19: List of upcoming tasks [0xc0002e7ae0] has been created and sent by server
+LOG: 2026/05/31 18:25:48 auth_middleware_handler.go:16: Authentication completed successfully
+LOG: 2026/05/31 18:25:48 task.go:82: List of upcoming tasks [0xc0001f1ea0 0xc0001f1ef0 0xc00030e000] has been successfully created
+LOG: 2026/05/31 18:25:48 tasks_handler.go:19: List of upcoming tasks [0xc0001f1ea0 0xc0001f1ef0 0xc00030e000] has been created and sent by server

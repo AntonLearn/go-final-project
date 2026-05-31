@@ -1,5 +1,5 @@
-// Package api
-package api
+// Package nextdate
+package nextdate
 
 import (
 	"errors"
@@ -15,7 +15,7 @@ import (
 
 var errEmpty = errors.New("line with repetition rule: empty line")
 
-func checkDate(task *db.Task) error {
+func CheckDate(task *db.Task) error {
 
 	nowDateStr := time.Now().Format(format.DateFormatTemplateYYYYMMDD)
 	if task.Date == "" {

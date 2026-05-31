@@ -1,5 +1,5 @@
-// Package api
-package api
+// Package handlers
+package handlers
 
 import (
 	"net/http"
@@ -17,13 +17,13 @@ func InitHandlers(mux *http.ServeMux) {
 	// Creating handler for api/nextdate
 	mux.HandleFunc("GET /api/nextdate", nextDayHandler)
 	// Creating handler for api/tasks
-	mux.HandleFunc("GET /api/tasks", authMiddleware(tasksHandler))
+	mux.HandleFunc("GET /api/tasks", authMiddlewareHandler(tasksHandler))
 	// Creating handler for api/task/done
-	mux.HandleFunc("POST /api/task/done", authMiddleware(taskDoneHandler))
+	mux.HandleFunc("POST /api/task/done", authMiddlewareHandler(taskDoneHandler))
 	// Creating handlers for api/task
-	mux.HandleFunc("POST /api/task", authMiddleware(addTaskHandler))
-	mux.HandleFunc("GET /api/task", authMiddleware(getTaskHandler))
-	mux.HandleFunc("PUT /api/task", authMiddleware(updateTaskHandler))
-	mux.HandleFunc("DELETE /api/task", authMiddleware(deleteTaskHandler))
+	mux.HandleFunc("POST /api/task", authMiddlewareHandler(addTaskHandler))
+	mux.HandleFunc("GET /api/task", authMiddlewareHandler(getTaskHandler))
+	mux.HandleFunc("PUT /api/task", authMiddlewareHandler(updateTaskHandler))
+	mux.HandleFunc("DELETE /api/task", authMiddlewareHandler(deleteTaskHandler))
 	config.Config.Logger.Println("Handler initialization completed successfully")
 }
