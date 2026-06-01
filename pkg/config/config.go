@@ -1,13 +1,10 @@
-// Package config
+// Package config manages application configuration.
 package config
 
-import (
-	"database/sql"
-	"log"
-)
+import "database/sql"
 
-type ConfigApp struct {
-	Logger           *log.Logger
+// AppConfig holds all global application settings.
+type AppConfig struct {
 	DBFileName       string
 	DBPath           string
 	WebDirPath       string
@@ -19,4 +16,5 @@ type ConfigApp struct {
 	MaxNumTasks      int
 }
 
-var Config ConfigApp
+// Config is the global application configuration instance.
+var Config AppConfig

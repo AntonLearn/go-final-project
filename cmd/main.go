@@ -1,8 +1,10 @@
-// Package main
+// Package main is the entry point of the application.
+// It initializes all components and starts the HTTP server with graceful shutdown support.
 package main
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -18,77 +20,92 @@ import (
 )
 
 func main() {
+	// Initialize logger
 	logWriter, err := logger.SetupLogger()
 	if err != nil {
-		config.Config.Logger.Println(err)
+		// Fallback to console if logger initialization fails
+		fmt.Printf("Failed to setup logger: %v\n", err)
 		return
 	}
 	defer logWriter.Close()
+
+	// Read application configuration from environment variables
 	if err = config.ReadEnvApp(); err != nil {
-		config.Config.Logger.Println(err)
+		logger.Errorf("Failed to read environment configuration: %v", err)
 		return
 	}
-	config.Config.Logger.Println("Application started successfully")
-	// Opening db
+
+	logger.Info("Application started successfully")
+
+	// Open database connection
 	if err = db.OpenDB(); err != nil {
-		config.Config.Logger.Println(err)
+		logger.Errorf("Failed to open database: %v", err)
 		return
 	}
-	config.Config.Logger.Printf("Database %s is ready for use", config.Config.DBFileName)
+	logger.Infof("Database %s is ready for use", config.Config.DBFileName)
 	defer config.Config.DBConnect.Close()
+
 	config.SetupAppStartConfig()
-	// Creating new server with logger
-	server := server.NewServer()
-	mux, ok := server.HTTPServer.Handler.(*http.ServeMux)
+
+	// Create HTTP server instance
+	srv := server.NewServer()
+
+	// Initialize request handlers
+	mux, ok := srv.HTTPServer.Handler.(*http.ServeMux)
 	if !ok {
-		config.Config.Logger.Println("Expected *http.ServeMux, got something else")
+		logger.Error("Expected *http.ServeMux, got something else")
 		return
 	}
 	handlers.InitHandlers(mux)
-	// Starting this server
+
+	// Graceful Shutdown Setup
+
+	baseAddress := "http://localhost" + srv.HTTPServer.Addr
+
+	// Create cancel function (context itself is not needed here)
+	_, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Channel for OS signals
 	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
-	readyChan := make(chan struct{}, 1)
-	errChan := make(chan error, 1)
-	baseAddress := "http://localhost" + server.HTTPServer.Addr
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+
+	// Start server in a separate goroutine
 	go func() {
-		config.Config.Logger.Printf("Server is trying to start on %s\n", baseAddress)
-		ln, err := net.Listen("tcp", server.HTTPServer.Addr)
+		logger.Infof("Server is trying to start on %s", baseAddress)
+
+		ln, err := net.Listen("tcp", srv.HTTPServer.Addr)
 		if err != nil {
-			config.Config.Logger.Printf("Failed to listen on %s: %s\n", server.HTTPServer.Addr, err.Error())
-			errChan <- err
+			logger.Errorf("Failed to listen on %s: %v", srv.HTTPServer.Addr, err)
+			cancel()
 			return
 		}
-		readyChan <- struct{}{}
-		config.Config.Logger.Println("Server has started listening successfully!")
-		if err := server.HTTPServer.Serve(ln); err != nil && err != http.ErrServerClosed {
-			config.Config.Logger.Printf("http.Serve returned error: %s\n", err.Error())
-			errChan <- err
-		} else {
-			config.Config.Logger.Println("http.Serve finished with non error or graceful shutdown)")
-			errChan <- nil
+
+		logger.Infof("Server started successfully on %s", baseAddress)
+
+		if err := srv.HTTPServer.Serve(ln); err != nil && err != http.ErrServerClosed {
+			logger.Errorf("Server error: %v", err)
+			cancel()
 		}
 	}()
-	select {
-	case <-readyChan:
-		config.Config.Logger.Printf("Server is running on %s\n", baseAddress)
-	case serverErr := <-errChan:
-		if serverErr != nil {
-			config.Config.Logger.Printf("Failed to start server: %s\n", serverErr.Error())
-			return
+
+	// Wait for shutdown signal
+	<-stop
+	logger.Info("Shutdown signal received. Initiating graceful shutdown...")
+
+	// Graceful shutdown with timeout
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer shutdownCancel()
+
+	if err := srv.HTTPServer.Shutdown(shutdownCtx); err != nil {
+		logger.Errorf("Graceful shutdown failed: %v", err)
+		// Force close if graceful shutdown fails
+		if closeErr := srv.HTTPServer.Close(); closeErr != nil {
+			logger.Errorf("Force close failed: %v", closeErr)
 		}
-	case <-stop:
-		config.Config.Logger.Println("Shutdown signal received")
-		config.Config.Logger.Println("Initiating graceful shutdown")
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		defer cancel()
-		if err := server.HTTPServer.Shutdown(ctx); err != nil {
-			config.Config.Logger.Printf("Failed to shutdown server gracefully: %s\n", err.Error())
-			config.Config.Logger.Println("Forcing application termination due to failed shutdown")
-			os.Exit(1)
-		} else {
-			config.Config.Logger.Println("Server stopped gracefully")
-		}
-		config.Config.Logger.Println("Application terminated successfully")
+	} else {
+		logger.Info("Server stopped gracefully")
 	}
+
+	logger.Info("Application terminated successfully")
 }

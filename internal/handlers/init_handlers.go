@@ -1,29 +1,49 @@
-// Package handlers
+// Package handlers provides HTTP handlers and middleware for the application.
 package handlers
 
 import (
 	"net/http"
+	"time"
 
-	"github.com/antonlearn/go-final-project/pkg/config"
+	"github.com/antonlearn/go-final-project/pkg/logger"
 )
 
+// InitHandlers registers all application routes and their corresponding handlers.
+// It also applies authentication middleware where required.
 func InitHandlers(mux *http.ServeMux) {
-	// Creating handler for /api/signin
+	// Public routes
+	mux.HandleFunc("/health", healthCheckHandler)
+
+	// Authentication routes
 	mux.HandleFunc("POST /api/signin", signinHandler)
-	// Creating handler for /api/signout
 	mux.HandleFunc("GET /api/signout", signoutHandler)
-	// Creating handler for root path and all subpaths of webDir
+
+	// Web frontend routes
 	mux.Handle("GET /", reloadHomePageHandler())
-	// Creating handler for api/nextdate
+
+	// API routes
 	mux.HandleFunc("GET /api/nextdate", nextDayHandler)
-	// Creating handler for api/tasks
+
+	// Protected routes (require authentication)
 	mux.HandleFunc("GET /api/tasks", authMiddlewareHandler(tasksHandler))
-	// Creating handler for api/task/done
 	mux.HandleFunc("POST /api/task/done", authMiddlewareHandler(taskDoneHandler))
-	// Creating handlers for api/task
+
+	// Task CRUD operations (protected)
 	mux.HandleFunc("POST /api/task", authMiddlewareHandler(addTaskHandler))
 	mux.HandleFunc("GET /api/task", authMiddlewareHandler(getTaskHandler))
 	mux.HandleFunc("PUT /api/task", authMiddlewareHandler(updateTaskHandler))
 	mux.HandleFunc("DELETE /api/task", authMiddlewareHandler(deleteTaskHandler))
-	config.Config.Logger.Println("Handler initialization completed successfully")
+
+	logger.Info("Handler initialization completed successfully")
+}
+
+// healthCheckHandler returns the current health status of the application.
+func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	response := `{"status": "healthy", "timestamp": "` + time.Now().UTC().Format(time.RFC3339) + `"}`
+	w.Write([]byte(response))
+
+	logger.Infof("Health check called from %s", r.RemoteAddr)
 }
