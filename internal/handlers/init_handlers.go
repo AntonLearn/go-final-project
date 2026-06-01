@@ -19,7 +19,7 @@ func InitHandlers(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/signout", signoutHandler)
 
 	// Web frontend routes
-	mux.Handle("GET /", reloadHomePageHandler())
+	mux.Handle("/", reloadHomePageHandler())
 
 	// API routes
 	mux.HandleFunc("GET /api/nextdate", nextDayHandler)
