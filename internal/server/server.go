@@ -24,9 +24,9 @@ func NewServer() *Server {
 			Addr:         ":" + config.Config.Port,
 			Handler:      mux,
 			ErrorLog:     config.Config.Logger,
-			ReadTimeout:  5 * time.Second,
-			WriteTimeout: 10 * time.Second,
-			IdleTimeout:  15 * time.Second,
+			ReadTimeout:  15 * time.Second,
+			WriteTimeout: 60 * time.Second,
+			IdleTimeout:  30 * time.Second,
 		},
 	}
 }
