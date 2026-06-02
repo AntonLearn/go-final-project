@@ -26,7 +26,7 @@ func dbInit() error {
 }
 
 // OpenDB opens the SQLite database and initializes the schema if needed.
-func OpenDB() error {
+func OpenDB() (*sql.DB, error) {
 	// Check if database file exists
 	dbNotExists := false
 	if _, err := os.Stat(config.Config.DBPath); err != nil {
@@ -34,7 +34,7 @@ func OpenDB() error {
 			dbNotExists = true
 		} else {
 			logger.Errorf("Failed to check database file status: %v", err)
-			return err
+			return nil, err
 		}
 	}
 
@@ -43,18 +43,18 @@ func OpenDB() error {
 	dbConnect, err = sql.Open("sqlite", config.Config.DBPath)
 	if err != nil {
 		logger.Errorf("Failed to open SQLite database at %s: %v", config.Config.DBPath, err)
-		return err
+		return nil, err
 	}
 
 	// Create tables if this is a new database
 	if dbNotExists {
 		if err := dbInit(); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	logger.Infof("Database %s was opened successfully", config.Config.DBFileName)
-	return nil
+	return dbConnect, nil
 }
 
 func Close() error {

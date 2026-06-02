@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net"
 	"net/http"
@@ -20,7 +21,7 @@ import (
 )
 
 func main() {
-	// Initialize logger
+	// Initialize the structured logger
 	logWriter, err := logger.SetupLogger()
 	if err != nil {
 		// Fallback to console if logger initialization fails
@@ -37,17 +38,22 @@ func main() {
 
 	logger.Info("Application started successfully")
 
-	// Open database connection
-	if err = db.OpenDB(); err != nil {
+	// Open connection to the database
+	dbConnect, err := db.OpenDB()
+	if err != nil {
 		logger.Errorf("Failed to open database: %v", err)
 		return
 	}
 	logger.Infof("Database %s is ready for use", config.Config.DBFileName)
-	defer func() {
-		if err := db.Close(); err != nil {
-			logger.Errorf("Error closing database: %v", err)
+
+	// Ensure database connection is safety closed on application exit
+	defer func(dbConnect *sql.DB) {
+		if dbConnect != nil {
+			if err := db.Close(); err != nil {
+				logger.Errorf("Error closing database: %v", err)
+			}
 		}
-	}()
+	}(dbConnect)
 
 	config.SetupAppStartConfig()
 
@@ -62,48 +68,60 @@ func main() {
 	}
 	handlers.InitHandlers(mux)
 
-	// Graceful Shutdown Setup
-
 	baseAddress := "http://localhost" + srv.HTTPServer.Addr
 
-	// Create cancel function (context itself is not needed here)
-	_, cancel := context.WithCancel(context.Background())
-	defer cancel()
+	// Server launch tracking (split stages)
 
-	// Channel for OS signals
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+	// Stage 1: Explicitly log the intent/attempt to start the server
+	logger.Infof("Attempting to bind and listen on address: %s", baseAddress)
 
-	// Start server in a separate goroutine
+	// Explicitly try to open the network port. If this fails (e.g. port already in use),
+	// the application will fail here immediately before starting any background routines
+	listener, err := net.Listen("tcp", srv.HTTPServer.Addr)
+	if err != nil {
+		logger.Errorf("Failed to bind to address %s: %v", srv.HTTPServer.Addr, err)
+	}
+	defer listener.Close()
+
+	// Stage 2: Explicitly log that the port is successfully bound and the server is actually running
+	logger.Infof("Server successfully started and listening on %s", baseAddress)
+
+	// Graceful Shutdown Setup
+
+	// Create a context that listens for termination signals from the OS
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+	defer stop()
+
+	// Channel to capture critical errors while the server is serving requests
+	serverErrors := make(chan error, 1)
+
+	// Start processing active connection requests in a separate goroutine
 	go func() {
-		logger.Infof("Server is trying to start on %s", baseAddress)
-
-		ln, err := net.Listen("tcp", srv.HTTPServer.Addr)
-		if err != nil {
-			logger.Errorf("Failed to listen on %s: %v", srv.HTTPServer.Addr, err)
-			cancel()
-			return
-		}
-
-		logger.Infof("Server started successfully on %s", baseAddress)
-
-		if err := srv.HTTPServer.Serve(ln); err != nil && err != http.ErrServerClosed {
-			logger.Errorf("Server error: %v", err)
-			cancel()
+		// Pass the pre-established listener instead of using ListenAndServe
+		if err := srv.HTTPServer.Serve(listener); err != nil && err != http.ErrServerClosed {
+			serverErrors <- err
 		}
 	}()
 
-	// Wait for shutdown signal
-	<-stop
-	logger.Info("Shutdown signal received. Initiating graceful shutdown...")
+	// Block the main goroutine until an OS signal is caught or a runtime server error occurs
+	select {
+	case err := <-serverErrors:
+		logger.Errorf("Server encountered a critical runtime error: %v", err)
+		return
+	case <-ctx.Done():
+		// OS signal received, proceed to graceful shutdown sequence
+		logger.Info("Shutdown signal received. Initiating graceful shutdown...")
+		stop() // Stop receiving further signal notifications as early as possible
+	}
 
-	// Graceful shutdown with timeout
+	// Create a context with a timeout for the graceful shutdown duration
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
 
+	// Attempt to shutdown the server gracefully, allowing active connections to finish
 	if err := srv.HTTPServer.Shutdown(shutdownCtx); err != nil {
 		logger.Errorf("Graceful shutdown failed: %v", err)
-		// Force close if graceful shutdown fails
+		// Force immediate closure if the graceful shutdown times out
 		if closeErr := srv.HTTPServer.Close(); closeErr != nil {
 			logger.Errorf("Force close failed: %v", closeErr)
 		}

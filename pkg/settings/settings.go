@@ -19,4 +19,6 @@ const (
 
 	// Application limits
 	MaxNumTasks = 50
+
+	LogFileStdout = "File" // possible values: File, Stdout, Both
 )

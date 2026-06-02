@@ -8,6 +8,8 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"github.com/antonlearn/go-final-project/pkg/settings"
 )
 
 var (
@@ -28,8 +30,16 @@ func SetupLogger() (*os.File, error) {
 		return nil, fmt.Errorf("failed to create log file %s: %w", logFileName, err)
 	}
 
-	// Write logs to both file and stdout (console)
-	multiWriter := io.MultiWriter(file, os.Stdout)
+	// Write logs to file/stdout/file and stdout
+	var multiWriter io.Writer
+	switch settings.LogFileStdout {
+	case "File":
+		multiWriter = io.MultiWriter(file)
+	case "Stdout":
+		multiWriter = io.MultiWriter(os.Stdout)
+	default:
+		multiWriter = io.MultiWriter(file, os.Stdout)
+	}
 
 	// Initialize leveled loggers with timestamp and file information
 	InfoLogger = log.New(multiWriter, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
