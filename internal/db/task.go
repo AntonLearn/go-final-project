@@ -25,7 +25,7 @@ type Task struct {
 
 // AddTask inserts a new task into the database and returns its ID.
 func AddTask(task *Task) (int64, error) {
-	result, err := config.Config.DBConnect.Exec(`
+	result, err := dbConnect.Exec(`
 		INSERT INTO scheduler (date, title, comment, repeat) 
 		VALUES (:date, :title, :comment, :repeat)`,
 		sql.Named("date", task.Date),
@@ -58,7 +58,7 @@ func GetTasks(search string) ([]*Task, error) {
 		// Try to parse as date first
 		searchDate, err = time.Parse(format.DateFormatTemplateDDMMYYYY, search)
 		if err == nil {
-			rows, err = config.Config.DBConnect.Query(`
+			rows, err = dbConnect.Query(`
 				SELECT id, date, title, comment, repeat 
 				FROM scheduler 
 				WHERE date = :date 
@@ -69,7 +69,7 @@ func GetTasks(search string) ([]*Task, error) {
 			)
 		} else {
 			// Search by title or comment
-			rows, err = config.Config.DBConnect.Query(`
+			rows, err = dbConnect.Query(`
 				SELECT id, date, title, comment, repeat 
 				FROM scheduler 
 				WHERE LOWER(title) LIKE '%' || LOWER(:search) || '%' 
@@ -82,7 +82,7 @@ func GetTasks(search string) ([]*Task, error) {
 		}
 	} else {
 		// Return all tasks
-		rows, err = config.Config.DBConnect.Query(`
+		rows, err = dbConnect.Query(`
 			SELECT id, date, title, comment, repeat 
 			FROM scheduler 
 			ORDER BY date 
@@ -118,7 +118,7 @@ func GetTasks(search string) ([]*Task, error) {
 // GetTask retrieves a single task by ID.
 func GetTask(id int) (*Task, error) {
 	var task Task
-	err := config.Config.DBConnect.QueryRow(`
+	err := dbConnect.QueryRow(`
 		SELECT id, date, title, comment, repeat 
 		FROM scheduler WHERE id = :id`, sql.Named("id", id)).
 		Scan(&task.ID, &task.Date, &task.Title, &task.Comment, &task.Repeat)
@@ -142,7 +142,7 @@ func UpdateTask(task *Task) error {
 		return err
 	}
 
-	result, err := config.Config.DBConnect.Exec(`
+	result, err := dbConnect.Exec(`
 		UPDATE scheduler 
 		SET date = :date, title = :title, comment = :comment, repeat = :repeat 
 		WHERE id = :id`,
@@ -175,7 +175,7 @@ func UpdateTask(task *Task) error {
 
 // DeleteTask removes a task by ID.
 func DeleteTask(id int) error {
-	_, err := config.Config.DBConnect.Exec(`DELETE FROM scheduler WHERE id = :id`, sql.Named("id", id))
+	_, err := dbConnect.Exec(`DELETE FROM scheduler WHERE id = :id`, sql.Named("id", id))
 	if err != nil {
 		logger.Errorf("Failed to delete task %d: %v", id, err)
 		return err
@@ -187,7 +187,7 @@ func DeleteTask(id int) error {
 
 // UpdateDateTask updates only the date of a recurring task.
 func UpdateDateTask(nextDate string, id int) error {
-	result, err := config.Config.DBConnect.Exec(`
+	result, err := dbConnect.Exec(`
 		UPDATE scheduler SET date = :date WHERE id = :id`,
 		sql.Named("date", nextDate),
 		sql.Named("id", id),

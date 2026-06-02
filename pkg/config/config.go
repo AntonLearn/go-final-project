@@ -1,8 +1,6 @@
 // Package config manages application configuration.
 package config
 
-import "database/sql"
-
 // AppConfig holds all global application settings.
 type AppConfig struct {
 	DBFileName       string
@@ -12,7 +10,6 @@ type AppConfig struct {
 	ExpectedPassword string
 	ExpectedHash     string
 	JwtKey           []byte
-	DBConnect        *sql.DB
 	MaxNumTasks      int
 }
 

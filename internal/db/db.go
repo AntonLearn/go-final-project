@@ -12,9 +12,11 @@ import (
 	"github.com/antonlearn/go-final-project/pkg/logger"
 )
 
+var dbConnect *sql.DB
+
 // dbInit creates the necessary tables and indexes if they don't exist.
 func dbInit() error {
-	if _, err := config.Config.DBConnect.Exec(initCommand); err != nil {
+	if _, err := dbConnect.Exec(initCommand); err != nil {
 		logger.Errorf("Failed to initialize database schema: %v", err)
 		return err
 	}
@@ -38,7 +40,7 @@ func OpenDB() error {
 
 	// Open database connection
 	var err error
-	config.Config.DBConnect, err = sql.Open("sqlite", config.Config.DBPath)
+	dbConnect, err = sql.Open("sqlite", config.Config.DBPath)
 	if err != nil {
 		logger.Errorf("Failed to open SQLite database at %s: %v", config.Config.DBPath, err)
 		return err
@@ -52,5 +54,12 @@ func OpenDB() error {
 	}
 
 	logger.Infof("Database %s was opened successfully", config.Config.DBFileName)
+	return nil
+}
+
+func Close() error {
+	if dbConnect != nil {
+		return dbConnect.Close()
+	}
 	return nil
 }

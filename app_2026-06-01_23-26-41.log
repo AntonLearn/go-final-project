@@ -1,0 +1,35 @@
+INFO: 2026/06/02 04:26:41 logger.go:50: Application started successfully
+INFO: 2026/06/02 04:26:41 logger.go:50: Scheduler table and indexes have been successfully created
+INFO: 2026/06/02 04:26:41 logger.go:55: Database scheduler.db was opened successfully
+INFO: 2026/06/02 04:26:41 logger.go:55: Database scheduler.db is ready for use
+INFO: 2026/06/02 04:26:41 logger.go:50: Handler initialization completed successfully
+INFO: 2026/06/02 04:26:41 logger.go:55: Server is trying to start on http://localhost:7540
+INFO: 2026/06/02 04:26:41 logger.go:55: Server started successfully on http://localhost:7540
+INFO: 2026/06/02 04:26:45 logger.go:50: Token in cookies was deleted successfully
+INFO: 2026/06/02 04:26:45 logger.go:50: Logout completed successfully
+INFO: 2026/06/02 04:26:45 logger.go:50: Login page has been reloaded successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Token in cookies was deleted successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Token in cookies was deleted successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Logout completed successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Login page has been reloaded successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Logout completed successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Login page has been reloaded successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Token in cookies was deleted successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Logout completed successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Login page has been reloaded successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Token in cookies was deleted successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Logout completed successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Login page has been reloaded successfully
+WARN: 2026/06/02 04:26:46 logger.go:65: No auth token cookie found from [::1]:51336
+ERROR: 2026/06/02 04:26:46 logger.go:75: Error response sent: authentication required: http: named cookie not present (status: 401)
+INFO: 2026/06/02 04:26:46 logger.go:50: Token in cookies was deleted successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Logout completed successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Login page has been reloaded successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Token in cookies was deleted successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Logout completed successfully
+INFO: 2026/06/02 04:26:46 logger.go:50: Login page has been reloaded successfully
+WARN: 2026/06/02 04:26:50 logger.go:65: No auth token cookie found from [::1]:51336
+ERROR: 2026/06/02 04:26:50 logger.go:75: Error response sent: authentication required: http: named cookie not present (status: 401)
+INFO: 2026/06/02 04:27:58 logger.go:50: Shutdown signal received. Initiating graceful shutdown...
+INFO: 2026/06/02 04:27:58 logger.go:50: Server stopped gracefully
+INFO: 2026/06/02 04:27:58 logger.go:50: Application terminated successfully

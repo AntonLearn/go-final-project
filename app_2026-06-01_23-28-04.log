@@ -1,0 +1,9 @@
+INFO: 2026/06/02 04:28:04 logger.go:50: Application started successfully
+INFO: 2026/06/02 04:28:04 logger.go:55: Database scheduler.db was opened successfully
+INFO: 2026/06/02 04:28:04 logger.go:55: Database scheduler.db is ready for use
+INFO: 2026/06/02 04:28:04 logger.go:50: Handler initialization completed successfully
+INFO: 2026/06/02 04:28:04 logger.go:55: Server is trying to start on http://localhost:7540
+INFO: 2026/06/02 04:28:04 logger.go:55: Server started successfully on http://localhost:7540
+INFO: 2026/06/02 04:28:11 logger.go:50: Shutdown signal received. Initiating graceful shutdown...
+INFO: 2026/06/02 04:28:11 logger.go:50: Server stopped gracefully
+INFO: 2026/06/02 04:28:11 logger.go:50: Application terminated successfully

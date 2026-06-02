@@ -43,7 +43,11 @@ func main() {
 		return
 	}
 	logger.Infof("Database %s is ready for use", config.Config.DBFileName)
-	defer config.Config.DBConnect.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			logger.Errorf("Error closing database: %v", err)
+		}
+	}()
 
 	config.SetupAppStartConfig()
 
