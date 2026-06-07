@@ -12,11 +12,9 @@ import (
 	"github.com/antonlearn/go-final-project/pkg/logger"
 )
 
-var dbConnect *sql.DB
-
 // dbInit creates the necessary tables and indexes if they don't exist.
 func dbInit() error {
-	if _, err := dbConnect.Exec(initCommand); err != nil {
+	if _, err := config.DB.Connect.Exec(initCommand); err != nil {
 		logger.Errorf("Failed to initialize database schema: %v", err)
 		return err
 	}
@@ -26,40 +24,40 @@ func dbInit() error {
 }
 
 // OpenDB opens the SQLite database and initializes the schema if needed.
-func OpenDB() (*sql.DB, error) {
+func OpenDB() error {
 	// Check if database file exists
 	dbNotExists := false
-	if _, err := os.Stat(config.Config.DBPath); err != nil {
+	if _, err := os.Stat(config.DB.Path); err != nil {
 		if os.IsNotExist(err) {
 			dbNotExists = true
 		} else {
 			logger.Errorf("Failed to check database file status: %v", err)
-			return nil, err
+			return err
 		}
 	}
 
 	// Open database connection
 	var err error
-	dbConnect, err = sql.Open("sqlite", config.Config.DBPath)
+	config.DB.Connect, err = sql.Open("sqlite", config.DB.Path)
 	if err != nil {
-		logger.Errorf("Failed to open SQLite database at %s: %v", config.Config.DBPath, err)
-		return nil, err
+		logger.Errorf("Failed to open SQLite database at %s: %v", config.DB.Path, err)
+		return err
 	}
 
 	// Create tables if this is a new database
 	if dbNotExists {
 		if err := dbInit(); err != nil {
-			return nil, err
+			return err
 		}
 	}
 
-	logger.Infof("Database %s was opened successfully", config.Config.DBFileName)
-	return dbConnect, nil
+	logger.Infof("Database %s was opened successfully", config.DB.FileName)
+	return nil
 }
 
 func Close() error {
-	if dbConnect != nil {
-		return dbConnect.Close()
+	if config.DB.Connect != nil {
+		return config.DB.Connect.Close()
 	}
 	return nil
 }

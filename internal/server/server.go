@@ -26,7 +26,7 @@ func NewServer() *Server {
 		// Using the new leveled logger (Info level) for general logging
 		Log: logger.InfoLogger,
 		HTTPServer: http.Server{
-			Addr:    ":" + config.Config.Port,
+			Addr:    ":" + config.Config.Envs.Port,
 			Handler: mux,
 			// Use ErrorLogger for server's internal error logging
 			ErrorLog:     logger.ErrorLogger,

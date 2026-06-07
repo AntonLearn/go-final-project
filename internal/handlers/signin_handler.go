@@ -15,7 +15,7 @@ import (
 // signinHandler handles user authentication by password and returns a JWT token.
 func signinHandler(w http.ResponseWriter, r *http.Request) {
 	// If no password is configured, return a dummy token (development mode)
-	if config.Config.ExpectedPassword == "" {
+	if config.Config.Envs.ExpectedPassword == "" {
 		logger.Info("Empty password. Dummy-token was successfully created and sent by server")
 		logger.Info("Login completed successfully")
 		writeJSON(w, map[string]string{"token": "dummy-token"})
@@ -40,7 +40,7 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if request.Password != config.Config.ExpectedPassword {
+	if request.Password != config.Config.Envs.ExpectedPassword {
 		logger.Warnf("Invalid password attempt from %s", r.RemoteAddr)
 		writeErrorJSON(w, http.StatusUnauthorized, "Invalid password")
 		return

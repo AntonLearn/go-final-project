@@ -4,7 +4,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net"
 	"net/http"
@@ -20,42 +19,49 @@ import (
 	"github.com/antonlearn/go-final-project/pkg/logger"
 )
 
+// Standard error exit code for operational failures
+const failExitCode = 1
+
 func main() {
+	// Execute core application logic inside the run abstraction layer to preserve defer semantics.
+	if err := run(); err != nil {
+		// Standard error exit code for operational failures.
+		os.Exit(failExitCode)
+	}
+}
+
+func run() error {
 	// Initialize the structured logger
 	logWriter, err := logger.SetupLogger()
 	if err != nil {
 		// Fallback to console if logger initialization fails
 		fmt.Printf("Failed to setup logger: %v\n", err)
-		return
+		return err
 	}
 	defer logWriter.Close()
 
 	// Read application configuration from environment variables
-	if err = config.ReadEnvApp(); err != nil {
+	if err = config.SetupApp(); err != nil {
 		logger.Errorf("Failed to read environment configuration: %v", err)
-		return
+		return err
 	}
 
-	logger.Info("Application started successfully")
+	logger.Info("Initializing application infrastructure...")
 
 	// Open connection to the database
-	dbConnect, err := db.OpenDB()
+	err = db.OpenDB()
 	if err != nil {
 		logger.Errorf("Failed to open database: %v", err)
-		return
+		return err
 	}
-	logger.Infof("Database %s is ready for use", config.Config.DBFileName)
+	logger.Infof("Database %s is ready for use", config.DB.FileName)
 
-	// Ensure database connection is safety closed on application exit
-	defer func(dbConnect *sql.DB) {
-		if dbConnect != nil {
-			if err := db.Close(); err != nil {
-				logger.Errorf("Error closing database: %v", err)
-			}
+	// Automatically executes database cleanup on wrapper termination
+	defer func() {
+		if err := db.Close(); err != nil {
+			logger.Errorf("Error closing database: %v", err)
 		}
-	}(dbConnect)
-
-	config.SetupAppStartConfig()
+	}()
 
 	// Create HTTP server instance
 	srv := server.NewServer()
@@ -64,27 +70,37 @@ func main() {
 	mux, ok := srv.HTTPServer.Handler.(*http.ServeMux)
 	if !ok {
 		logger.Error("Expected *http.ServeMux, got something else")
-		return
+		return fmt.Errorf("invalid handler type assertion")
 	}
 	handlers.InitHandlers(mux)
 
-	baseAddress := "http://localhost" + srv.HTTPServer.Addr
-
-	// Server launch tracking (split stages)
-
-	// Stage 1: Explicitly log the intent/attempt to start the server
-	logger.Infof("Attempting to bind and listen on address: %s", baseAddress)
-
-	// Explicitly try to open the network port. If this fails (e.g. port already in use),
-	// the application will fail here immediately before starting any background routines
+	// Explicitly try to open the network port.
 	listener, err := net.Listen("tcp", srv.HTTPServer.Addr)
 	if err != nil {
 		logger.Errorf("Failed to bind to address %s: %v", srv.HTTPServer.Addr, err)
+		return err
 	}
 	defer listener.Close()
 
+	// Extract the actual address assigned by the Operating System
+	actualAddr := listener.Addr().String()
+
+	// Parse host and port to replace generalized interfaces (0.0.0.0 or ::) with localhost for user convenience
+	host, port, err := net.SplitHostPort(actualAddr)
+	var baseAddress string
+	if err == nil {
+		if host == "::" || host == "0.0.0.0" || host == "" {
+			host = "localhost"
+		}
+		baseAddress = fmt.Sprintf("http://%s:%s", host, port)
+	} else {
+		// Fallback to raw address if splitting fails
+		baseAddress = "http://" + actualAddr
+	}
+
 	// Stage 2: Explicitly log that the port is successfully bound and the server is actually running
 	logger.Infof("Server successfully started and listening on %s", baseAddress)
+	logger.Info("Application is fully operational and ready to accept traffic")
 
 	// Graceful Shutdown Setup
 
@@ -107,7 +123,7 @@ func main() {
 	select {
 	case err := <-serverErrors:
 		logger.Errorf("Server encountered a critical runtime error: %v", err)
-		return
+		return err // Non-zero exit cascade via run execution failure
 	case <-ctx.Done():
 		// OS signal received, proceed to graceful shutdown sequence
 		logger.Info("Shutdown signal received. Initiating graceful shutdown...")
@@ -130,4 +146,5 @@ func main() {
 	}
 
 	logger.Info("Application terminated successfully")
+	return nil // Clean exit with status code 0
 }

@@ -16,7 +16,7 @@ import (
 func authMiddlewareHandler(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// If no password is set in config, skip authentication (development mode)
-		if config.Config.ExpectedPassword == "" {
+		if config.Config.Envs.ExpectedPassword == "" {
 			logger.Info("Authentication skipped - no password configured")
 			handler(w, r)
 			return

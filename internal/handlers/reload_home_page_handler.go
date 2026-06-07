@@ -12,6 +12,6 @@ import (
 // to ensure the user sees the login page if needed.
 func reloadHomePageHandler() http.Handler {
 	return resetCookieMiddlewareHandler(
-		http.FileServer(http.Dir(config.Config.WebDirPath)),
+		http.FileServer(http.Dir(config.Envs.WebDirPath)),
 	)
 }
