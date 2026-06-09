@@ -1,4 +1,5 @@
-// Package handlers provides HTTP handlers and middleware for the application.
+// Package handlers implements the HTTP request routing, request processing logic,
+// and lifecycle management for scheduled tasks.
 package handlers
 
 import (
@@ -6,63 +7,59 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/antonlearn/go-final-project/internal/db"
-	"github.com/antonlearn/go-final-project/pkg/logger"
-	"github.com/antonlearn/go-final-project/pkg/nextdate"
+	"github.com/antonlearn/go-final-project/internal/nextdate"
 )
 
-// taskDoneHandler marks a task as completed.
-// If the task has no repeat rule, it is deleted.
-// If it has a repeat rule, its date is moved to the next occurrence.
-func taskDoneHandler(w http.ResponseWriter, r *http.Request) {
+// taskDoneHandler marks a specific task as completed. If the task is non-recurring,
+// it is permanently removed from the store; otherwise, its schedule is advanced to the next calculated runtime.
+func (h *Handler) taskDoneHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
 	if idStr == "" {
-		writeErrorJSON(w, http.StatusBadRequest, "request parameters: no task ID specified")
+		h.writeErrorJSON(w, http.StatusBadRequest, "request parameters: no task ID specified")
 		return
 	}
 
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		logger.Errorf("Invalid task ID format: %s", idStr)
-		writeErrorJSON(w, http.StatusBadRequest, err.Error())
+		h.logger.Errorf("Invalid task ID format: %s", idStr)
+		h.writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	task, err := db.GetTask(id)
+	// Retrieve the task state via the storage layer to evaluate its recurrence settings.
+	task, err := h.store.GetTask(id)
 	if err != nil {
-		logger.Errorf("Failed to get task with ID %d: %v", id, err)
-		writeErrorJSON(w, http.StatusBadRequest, err.Error())
+		h.logger.Errorf("Failed to get task with ID %d: %v", id, err)
+		h.writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if task.Repeat == "" {
-		// One-time task — delete after completion
-		err = db.DeleteTask(id)
+		// Process one-time tasks by removing them completely from data persistence.
+		err = h.store.DeleteTask(id)
 		if err != nil {
-			logger.Errorf("Failed to delete completed one-time task %d: %v", id, err)
-			writeErrorJSON(w, http.StatusInternalServerError, err.Error())
+			h.logger.Errorf("Failed to delete completed one-time task %d: %v", id, err)
+			h.writeErrorJSON(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-
-		writeJSON(w, emptyMap)
-		logger.Infof("Task %d was removed from list and processed as completed", id)
+		h.writeJSON(w, emptyMap)
+		h.logger.Infof("Task %d was removed from list and processed as completed", id)
 	} else {
-		// Recurring task — calculate next date
-		nextDate, err := nextdate.NextDate(time.Now(), task.Date, task.Repeat)
+		// Advance recurring tasks to their subsequent calendar milestones.
+		nextDate, err := nextdate.NextDate(time.Now(), task.Date, task.Repeat, h.logger)
 		if err != nil {
-			logger.Errorf("Failed to calculate next date for task %d: %v", id, err)
-			writeErrorJSON(w, http.StatusInternalServerError, err.Error())
+			h.logger.Errorf("Failed to calculate next date for task %d: %v", id, err)
+			h.writeErrorJSON(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		err = db.UpdateDateTask(nextDate, id)
+		err = h.store.UpdateDateTask(nextDate, id)
 		if err != nil {
-			logger.Errorf("Failed to update date for task %d: %v", id, err)
-			writeErrorJSON(w, http.StatusInternalServerError, err.Error())
+			h.logger.Errorf("Failed to update date for task %d: %v", id, err)
+			h.writeErrorJSON(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-
-		writeJSON(w, emptyMap)
-		logger.Infof("Task %d was processed as completed and its date was changed to %s", id, nextDate)
+		h.writeJSON(w, emptyMap)
+		h.logger.Infof("Task %d processed as completed, next date: %s", id, nextDate)
 	}
 }

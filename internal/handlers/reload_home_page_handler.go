@@ -1,17 +1,15 @@
-// Package handlers provides HTTP handlers and middleware for the application.
+// Package handlers implements the HTTP request routing, static file distribution,
+// and session management middleware for the task scheduler service.
 package handlers
 
 import (
 	"net/http"
-
-	"github.com/antonlearn/go-final-project/pkg/config"
 )
 
-// reloadHomePageHandler returns a handler that serves the frontend files
-// from the configured web directory. It also resets the auth cookie
-// to ensure the user sees the login page if needed.
-func reloadHomePageHandler() http.Handler {
-	return resetCookieMiddlewareHandler(
-		http.FileServer(http.Dir(config.Envs.WebDirPath)),
+// reloadHomePageHandler configures and returns an HTTP file server instance wrapped
+// in cookie remediation middleware to distribute static frontend assets.
+func (h *Handler) reloadHomePageHandler() http.Handler {
+	return h.resetCookieMiddlewareHandler(
+		http.FileServer(http.Dir(h.cfg.Envs.WebDirPath)),
 	)
 }

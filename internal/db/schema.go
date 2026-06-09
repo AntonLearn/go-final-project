@@ -1,7 +1,8 @@
-// Package db provides database operations and initialization
-// for the task scheduler using SQLite.
+// Package db manages database operations, schema initializations, and structural constants
+// for the task scheduler using SQLite as the storage backend.
 package db
 
+// initCommand contains the SQL schema definition required to initialize the scheduler table and its associated indexes.
 const initCommand = `
 CREATE TABLE IF NOT EXISTS scheduler (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

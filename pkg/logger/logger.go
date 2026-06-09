@@ -1,5 +1,5 @@
-// Package logger provides structured leveled logging for the application.
-// It writes logs to both console and a timestamped log file.
+// Package logger provides a structured, leveled logging implementation that wraps
+// standard library log primitives to support multi-stream outputs (file, stdout, or both).
 package logger
 
 import (
@@ -8,79 +8,100 @@ import (
 	"log"
 	"os"
 	"time"
-
-	"github.com/antonlearn/go-final-project/pkg/settings"
 )
 
-var (
-	// Leveled loggers
-	InfoLogger  *log.Logger
-	WarnLogger  *log.Logger
-	ErrorLogger *log.Logger
-)
-
-// SetupLogger initializes the leveled loggers and creates a timestamped log file.
-// It returns the file handle for proper closing in main.
-func SetupLogger() (*os.File, error) {
-	// Generate timestamped log filename
-	logFileName := generationLocalFileName(".log")
-
-	file, err := os.Create(logFileName)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create log file %s: %w", logFileName, err)
-	}
-
-	// Write logs to file/stdout/file and stdout
-	var multiWriter io.Writer
-	switch settings.LogFileStdout {
-	case "File":
-		multiWriter = io.MultiWriter(file)
-	case "Stdout":
-		multiWriter = io.MultiWriter(os.Stdout)
-	default:
-		multiWriter = io.MultiWriter(file, os.Stdout)
-	}
-
-	// Initialize leveled loggers with timestamp and file information
-	InfoLogger = log.New(multiWriter, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	WarnLogger = log.New(multiWriter, "WARN: ", log.Ldate|log.Ltime|log.Lshortfile)
-	ErrorLogger = log.New(multiWriter, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
-
-	return file, nil
+// Interface defines the decoupled logging contract enforced across various application
+// architecture layers.
+type Interface interface {
+	Info(v ...any)
+	Infof(format string, v ...any)
+	Warn(v ...any)
+	Warnf(format string, v ...any)
+	Error(v ...any)
+	Errorf(format string, v ...any)
 }
 
-// generationLocalFileName generates a unique log filename with current UTC timestamp
-func generationLocalFileName(ext string) string {
+// Logger implements the Interface contract by encapsulating isolated standard log
+// instances mapped to distinct operational severity levels.
+type Logger struct {
+	infoLog  *log.Logger
+	warnLog  *log.Logger
+	errorLog *log.Logger
+	file     *os.File
+}
+
+// New initializes and returns a configured Logger instance. Depending on the specified
+// output mode ("File", "Stdout", "Both"), it provisions underlying writer streams and
+// handles unique, timestamped log file allocations.
+func New(mode string) (*Logger, error) {
+	var file *os.File
+	var err error
+	var writer io.Writer
+
+	// Provision a local log file resource if the requested execution mode demands persistence.
+	if mode == "File" || mode == "Both" || mode == "" {
+		logFileName := generateLocalFileName(".log")
+		file, err = os.Create(logFileName)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create log file %s: %w", logFileName, err)
+		}
+	}
+
+	// Calibrate downstream destination streams based on operational topology preferences.
+	switch mode {
+	case "File":
+		writer = file
+	case "Stdout":
+		writer = os.Stdout
+	default: // Handles "Both" or unassigned fallback configurations
+		if file != nil {
+			writer = io.MultiWriter(file, os.Stdout)
+		} else {
+			writer = os.Stdout
+		}
+	}
+
+	// Capture date, precise time coordinates, and the immediate short file name descriptor.
+	flags := log.Ldate | log.Ltime | log.Lshortfile
+
+	return &Logger{
+		infoLog:  log.New(writer, "INFO:  ", flags),
+		warnLog:  log.New(writer, "WARN:  ", flags),
+		errorLog: log.New(writer, "ERROR: ", flags),
+		file:     file,
+	}, nil
+}
+
+// Close gracefully releases the underlying log file descriptor if it was allocated
+// during initialization.
+func (l *Logger) Close() error {
+	if l.file != nil {
+		return l.file.Close()
+	}
+	return nil
+}
+
+// Info logs messages to the informational stream using default line formatting.
+func (l *Logger) Info(v ...any) { l.infoLog.Println(v...) }
+
+// Infof logs formatted messages to the informational stream using standard template evaluation.
+func (l *Logger) Infof(format string, v ...any) { l.infoLog.Printf(format, v...) }
+
+// Warn logs warning alerts to the tracking stream using default line formatting.
+func (l *Logger) Warn(v ...any) { l.warnLog.Println(v...) }
+
+// Warnf logs formatted warning alerts to the tracking stream using standard template evaluation.
+func (l *Logger) Warnf(format string, v ...any) { l.warnLog.Printf(format, v...) }
+
+// Error logs failure messages to the system error stream using default line formatting.
+func (l *Logger) Error(v ...any) { l.errorLog.Println(v...) }
+
+// Errorf logs formatted failure messages to the system error stream using standard template evaluation.
+func (l *Logger) Errorf(format string, v ...any) { l.errorLog.Printf(format, v...) }
+
+// generateLocalFileName crafts a unique file naming constraint incorporating an active
+// UTC execution timestamp to avoid log collision risks.
+func generateLocalFileName(ext string) string {
 	timeStamp := time.Now().UTC().Format("2006-01-02_15-04-05")
 	return "app_" + timeStamp + ext
-}
-
-// Info logs a message at INFO level
-func Info(msg string) {
-	InfoLogger.Println(msg)
-}
-
-// Infof logs a formatted message at INFO level
-func Infof(format string, v ...any) {
-	InfoLogger.Printf(format, v...)
-}
-
-// Warn logs a message at WARN level
-func Warn(msg string) {
-	WarnLogger.Println(msg)
-}
-
-// Warnf logs a formatted message at WARN level
-func Warnf(format string, v ...any) {
-	WarnLogger.Printf(format, v...)
-}
-
-// Error logs a message at ERROR level
-func Error(msg string) {
-	ErrorLogger.Println(msg)
-}
-
-// Errorf logs a formatted message at ERROR level
-func Errorf(format string, v ...any) {
-	ErrorLogger.Printf(format, v...)
 }

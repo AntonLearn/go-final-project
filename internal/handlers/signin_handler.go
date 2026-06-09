@@ -1,4 +1,5 @@
-// Package handlers provides HTTP handlers and middleware for the application.
+// Package handlers implements the HTTP request routing, user authentication,
+// and session management endpoints for the task scheduler service.
 package handlers
 
 import (
@@ -7,25 +8,21 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v4"
-
-	"github.com/antonlearn/go-final-project/pkg/config"
-	"github.com/antonlearn/go-final-project/pkg/logger"
 )
 
-// signinHandler handles user authentication by password and returns a JWT token.
-func signinHandler(w http.ResponseWriter, r *http.Request) {
-	// If no password is configured, return a dummy token (development mode)
-	if config.Config.Envs.ExpectedPassword == "" {
-		logger.Info("Empty password. Dummy-token was successfully created and sent by server")
-		logger.Info("Login completed successfully")
-		writeJSON(w, map[string]string{"token": "dummy-token"})
+// signinHandler verifies incoming credentials against the system configuration and generates a signed JWT upon success.
+func (h *Handler) signinHandler(w http.ResponseWriter, r *http.Request) {
+	// Bypass explicit signature validation if the application is running without a mandatory password restriction.
+	if h.cfg.Envs.ExpectedPassword == "" {
+		h.logger.Info("Empty password. Dummy-token was successfully created and sent by server")
+		h.writeJSON(w, map[string]string{"token": "dummy-token"})
 		return
 	}
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		logger.Errorf("Failed to read request body: %v", err)
-		writeErrorJSON(w, http.StatusBadRequest, err.Error())
+		h.logger.Errorf("Failed to read request body: %v", err)
+		h.writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -35,30 +32,26 @@ func signinHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &request)
 	if err != nil {
-		logger.Errorf("Failed to unmarshal signin request: %v", err)
-		writeErrorJSON(w, http.StatusBadRequest, err.Error())
+		h.logger.Errorf("Failed to unmarshal signin request: %v", err)
+		h.writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if request.Password != config.Config.Envs.ExpectedPassword {
-		logger.Warnf("Invalid password attempt from %s", r.RemoteAddr)
-		writeErrorJSON(w, http.StatusUnauthorized, "Invalid password")
+	if request.Password != h.cfg.Envs.ExpectedPassword {
+		h.logger.Warnf("Invalid password attempt from %s", r.RemoteAddr)
+		h.writeErrorJSON(w, http.StatusUnauthorized, "Invalid password")
 		return
 	}
 
-	// Create JWT token with password hash claim
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256,
-		jwt.MapClaims{"password_hash": config.Config.ExpectedHash})
-
-	tokenString, err := token.SignedString(config.Config.JwtKey)
+	// Issue a new token embedding the pre-computed hash value to maintain uniform context maps.
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{"password_hash": h.cfg.ExpectedHash})
+	tokenString, err := token.SignedString(h.cfg.JwtKey)
 	if err != nil {
-		logger.Errorf("Failed to sign JWT token: %v", err)
-		writeErrorJSON(w, http.StatusInternalServerError, "Internal server error")
+		h.logger.Errorf("Failed to sign JWT token: %v", err)
+		h.writeErrorJSON(w, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
-	writeJSON(w, map[string]string{"token": tokenString})
-
-	logger.Info("Correct password. Token was successfully created and sent by server")
-	logger.Info("Login completed successfully")
+	h.writeJSON(w, map[string]string{"token": tokenString})
+	h.logger.Info("Login completed successfully")
 }

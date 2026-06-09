@@ -1,4 +1,5 @@
-// Package hash provides utility functions for password hashing.
+// Package hash provides lightweight, stateless utility routines to calculate
+// deterministic checksum signatures for password string verification.
 package hash
 
 import (
@@ -6,8 +7,8 @@ import (
 	"hash/crc32"
 )
 
-// HashPassword creates a simple hash of the password using CRC32.
-// Returns an 8-character hexadecimal string.
+// HashPassword computes an 8-character, zero-padded hexadecimal representation of the
+// provided plaintext string using the CRC-32 IEEE 802.3 cyclic redundancy polynomial.
 func HashPassword(expectedPassword string) string {
 	return fmt.Sprintf("%08x", crc32.ChecksumIEEE([]byte(expectedPassword)))
 }

@@ -1,5 +1,5 @@
-// Package main is the entry point of the application.
-// It initializes all components and starts the HTTP server with graceful shutdown support.
+// Package main serves as the entry point for the task scheduler service,
+// handling configuration loading, infrastructure initialization, and graceful shutdown.
 package main
 
 import (
@@ -12,80 +12,69 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/antonlearn/go-final-project/internal/config"
 	"github.com/antonlearn/go-final-project/internal/db"
-	"github.com/antonlearn/go-final-project/internal/handlers"
 	"github.com/antonlearn/go-final-project/internal/server"
-	"github.com/antonlearn/go-final-project/pkg/config"
+	"github.com/antonlearn/go-final-project/internal/settings"
 	"github.com/antonlearn/go-final-project/pkg/logger"
 )
 
-// Standard error exit code for operational failures
 const failExitCode = 1
 
 func main() {
-	// Execute core application logic inside the run abstraction layer to preserve defer semantics.
 	if err := run(); err != nil {
-		// Standard error exit code for operational failures.
 		os.Exit(failExitCode)
 	}
 }
 
 func run() error {
-	// Initialize the structured logger
-	logWriter, err := logger.SetupLogger()
+	// Initialize the application logger according to configuration settings (stdout, file, or both).
+	appLogger, err := logger.New(settings.LogFileStdout)
 	if err != nil {
-		// Fallback to console if logger initialization fails
 		fmt.Printf("Failed to setup logger: %v\n", err)
 		return err
 	}
-	defer logWriter.Close()
+	defer appLogger.Close()
+	appLogger.Info("Logger successfully initialized")
+	appLogger.Info("Starting application lifecycle execution...")
 
-	// Read application configuration from environment variables
-	if err = config.SetupApp(); err != nil {
-		logger.Errorf("Failed to read environment configuration: %v", err)
-		return err
-	}
+	// Load global application configurations.
+	appLogger.Info("Loading global application configuration...")
+	config.LoadConfig()
+	appLogger.Info("Global application configuration successfully loaded")
 
-	logger.Info("Initializing application infrastructure...")
+	appLogger.Info("Initializing application infrastructure...")
 
-	// Open connection to the database
-	err = db.OpenDB()
+	// Initialize the isolated database store with configuration variables.
+	store, err := db.NewStore(config.App.Envs.DB.Path, config.App.MaxNumTasks, appLogger)
 	if err != nil {
-		logger.Errorf("Failed to open database: %v", err)
+		appLogger.Errorf("Failed to open database: %v", err)
 		return err
 	}
-	logger.Infof("Database %s is ready for use", config.DB.FileName)
+	appLogger.Infof("Database %s is ready for use", config.App.Envs.DB.FileName)
 
-	// Automatically executes database cleanup on wrapper termination
 	defer func() {
-		if err := db.Close(); err != nil {
-			logger.Errorf("Error closing database: %v", err)
+		if err := store.Close(); err != nil {
+			appLogger.Errorf("Error closing database: %v", err)
 		}
 	}()
 
-	// Create HTTP server instance
-	srv := server.NewServer()
+	// Initialize the HTTP server instance with explicit dependency injection.
+	srv := server.NewServer(&config.App, store, appLogger)
 
-	// Initialize request handlers
-	mux, ok := srv.HTTPServer.Handler.(*http.ServeMux)
-	if !ok {
-		logger.Error("Expected *http.ServeMux, got something else")
-		return fmt.Errorf("invalid handler type assertion")
-	}
-	handlers.InitHandlers(mux)
-
-	// Explicitly try to open the network port.
+	// Bind and start the network TCP listener.
 	listener, err := net.Listen("tcp", srv.HTTPServer.Addr)
 	if err != nil {
-		logger.Errorf("Failed to bind to address %s: %v", srv.HTTPServer.Addr, err)
+		appLogger.Errorf("Failed to bind to address %s: %v", srv.HTTPServer.Addr, err)
 		return err
 	}
 	defer listener.Close()
 
-	// Extract the actual address assigned by the Operating System
-	actualAddr := listener.Addr().String()
+	// Log successful initialization of the network listener interface.
+	appLogger.Infof("Network TCP listener successfully started and binding to address: %s", srv.HTTPServer.Addr)
 
-	// Parse host and port to replace generalized interfaces (0.0.0.0 or ::) with localhost for user convenience
+	// Format a clean base address URL for user-friendly initialization logs.
+	actualAddr := listener.Addr().String()
 	host, port, err := net.SplitHostPort(actualAddr)
 	var baseAddress string
 	if err == nil {
@@ -94,57 +83,49 @@ func run() error {
 		}
 		baseAddress = fmt.Sprintf("http://%s:%s", host, port)
 	} else {
-		// Fallback to raw address if splitting fails
 		baseAddress = "http://" + actualAddr
 	}
 
-	// Stage 2: Explicitly log that the port is successfully bound and the server is actually running
-	logger.Infof("Server successfully started and listening on %s", baseAddress)
-	logger.Info("Application is fully operational and ready to accept traffic")
-
-	// Graceful Shutdown Setup
-
-	// Create a context that listens for termination signals from the OS
+	// Set up signal interception to handle termination events gracefully.
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer stop()
 
-	// Channel to capture critical errors while the server is serving requests
 	serverErrors := make(chan error, 1)
 
-	// Start processing active connection requests in a separate goroutine
+	// Run the HTTP server asynchronously in a separate goroutine.
 	go func() {
-		// Pass the pre-established listener instead of using ListenAndServe
 		if err := srv.HTTPServer.Serve(listener); err != nil && err != http.ErrServerClosed {
 			serverErrors <- err
 		}
 	}()
 
-	// Block the main goroutine until an OS signal is caught or a runtime server error occurs
+	// Log operational readiness state accurately after the background HTTP server process has been launched.
+	appLogger.Infof("Server successfully started and listening on %s", baseAddress)
+	appLogger.Info("Application is fully operational and ready to accept traffic")
+
+	// Block execution until an error occurs or a system interrupt signal is received.
 	select {
 	case err := <-serverErrors:
-		logger.Errorf("Server encountered a critical runtime error: %v", err)
-		return err // Non-zero exit cascade via run execution failure
+		appLogger.Errorf("Server encountered a critical runtime error: %v", err)
+		return err
 	case <-ctx.Done():
-		// OS signal received, proceed to graceful shutdown sequence
-		logger.Info("Shutdown signal received. Initiating graceful shutdown...")
-		stop() // Stop receiving further signal notifications as early as possible
+		appLogger.Info("Shutdown signal received. Initiating graceful shutdown...")
+		stop()
 	}
 
-	// Create a context with a timeout for the graceful shutdown duration
+	// Enforce a strict 30-second timeout context for flushing in-flight requests.
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer shutdownCancel()
 
-	// Attempt to shutdown the server gracefully, allowing active connections to finish
 	if err := srv.HTTPServer.Shutdown(shutdownCtx); err != nil {
-		logger.Errorf("Graceful shutdown failed: %v", err)
-		// Force immediate closure if the graceful shutdown times out
+		appLogger.Errorf("Graceful shutdown failed: %v", err)
 		if closeErr := srv.HTTPServer.Close(); closeErr != nil {
-			logger.Errorf("Force close failed: %v", closeErr)
+			appLogger.Errorf("Force close failed: %v", closeErr)
 		}
 	} else {
-		logger.Info("Server stopped gracefully")
+		appLogger.Info("Server stopped gracefully")
 	}
 
-	logger.Info("Application terminated successfully")
-	return nil // Clean exit with status code 0
+	appLogger.Info("Application terminated successfully")
+	return nil
 }

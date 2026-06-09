@@ -1,12 +1,12 @@
 module github.com/antonlearn/go-final-project
 
-go 1.25.0
+go 1.25.5
 
 require (
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/stretchr/testify v1.11.1
-	modernc.org/sqlite v1.50.1
+	modernc.org/sqlite v1.52.0
 )
 
 require (

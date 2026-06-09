@@ -1,18 +1,18 @@
-// Package handlers provides HTTP handlers and middleware for the application.
+// Package handlers implements the HTTP request routing, request processing logic,
+// and utility calculation endpoints for the task scheduler service.
 package handlers
 
 import (
 	"net/http"
 	"time"
 
+	"github.com/antonlearn/go-final-project/internal/nextdate"
 	"github.com/antonlearn/go-final-project/pkg/format"
-	"github.com/antonlearn/go-final-project/pkg/logger"
-	"github.com/antonlearn/go-final-project/pkg/nextdate"
 )
 
-// nextDayHandler calculates and returns the next occurrence date
-// based on the provided start date and repetition rule.
-func nextDayHandler(w http.ResponseWriter, r *http.Request) {
+// nextDayHandler handles calculations for recurrent task execution timelines,
+// parsing baseline dates, target scopes, and recurrence rule strings to return a plain-text date response.
+func (h *Handler) nextDayHandler(w http.ResponseWriter, r *http.Request) {
 	nowStr := r.FormValue("now")
 	dstart := r.FormValue("date")
 	repeat := r.FormValue("repeat")
@@ -22,27 +22,27 @@ func nextDayHandler(w http.ResponseWriter, r *http.Request) {
 		err error
 	)
 
-	// Use current date if 'now' parameter is not provided
 	if nowStr == "" {
+		// Default to the current system date truncated to midnight if no simulation baseline is specified.
 		now = time.Now().Truncate(24 * time.Hour)
 	} else {
-		now, err = time.Parse(format.DateFormatTemplateYYYYMMDD, nowStr)
+		now, err = time.Parse(format.YYYYMMDD, nowStr)
 		if err != nil {
-			logger.Errorf("Invalid 'now' date format: %s", nowStr)
-			writeErrorJSON(w, http.StatusBadRequest, err.Error())
+			h.logger.Errorf("Invalid 'now' date format: %s", nowStr)
+			h.writeErrorJSON(w, http.StatusBadRequest, err.Error())
 			return
 		}
 	}
 
-	nextDate, err := nextdate.NextDate(now, dstart, repeat)
+	// Delegate scheduling computation to the underlying rule engine.
+	nextDate, err := nextdate.NextDate(now, dstart, repeat, h.logger)
 	if err != nil {
-		logger.Errorf("Failed to calculate next date. now=%s, date=%s, repeat=%s: %v", nowStr, dstart, repeat, err)
-		writeErrorJSON(w, http.StatusBadRequest, err.Error())
+		h.logger.Errorf("Failed to calculate next date: %v", err)
+		h.writeErrorJSON(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(nextDate))
-
-	logger.Infof("Next task date %s has been successfully generated and sent by server", nextDate)
+	h.logger.Infof("Next task date %s has been successfully generated", nextDate)
 }

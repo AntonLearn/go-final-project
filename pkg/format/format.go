@@ -1,13 +1,13 @@
-// Package format contains common date formatting constants
-// used throughout the application.
+// Package format contains immutable date layout templates used for parsing,
+// data-layer serialization, and user-facing representations across the task scheduler.
 package format
 
 const (
-	// DateFormatTemplateYYYYMMDD is used for internal date storage and calculations
-	// (example: 20250602)
-	DateFormatTemplateYYYYMMDD = "20060102"
+	// YYYYMMDD defines the layout used for internal date storage,
+	// cross-package sorting, and database-level temporal calculations.
+	YYYYMMDD = "20060102"
 
-	// DateFormatTemplateDDMMYYYY is used for displaying dates to users
-	// (example: 02.06.2025)
-	DateFormatTemplateDDMMYYYY = "02.01.2006"
+	// DDMMYYYY defines the localized layout used primarily for user-facing
+	// date displays and visual output formatting.
+	DDMMYYYY = "02.01.2006"
 )
