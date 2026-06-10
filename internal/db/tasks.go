@@ -39,7 +39,7 @@ func (s *Store) AddTask(task *model.Task) (int64, error) {
 // full-text search on titles and comments otherwise, or returns all tasks if empty.
 func (s *Store) GetTasks(search string) ([]*model.Task, error) {
 	var (
-		tasks      []*model.Task
+		tasks      = []*model.Task{}
 		rows       *sql.Rows
 		err        error
 		searchDate time.Time

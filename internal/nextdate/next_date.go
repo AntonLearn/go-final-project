@@ -78,7 +78,6 @@ func NextDate(now time.Time, dstart string, repeat string, appLogger *logger.Log
 		appLogger.Info("Empty repeat rule provided")
 		return "", errEmpty
 	}
-
 	resultDate, err := time.Parse(format.YYYYMMDD, dstart)
 	if err != nil {
 		appLogger.Errorf("Failed to parse start date %s: %v", dstart, err)
@@ -104,14 +103,12 @@ func NextDate(now time.Time, dstart string, repeat string, appLogger *logger.Log
 		if len(repeats) > 1 {
 			return "", errTooManyParameters
 		}
+
 		appLogger.Info("Applying yearly repetition rule")
 
-		if resultDate.After(now) {
-			return resultDate.Format(format.YYYYMMDD), nil
-		}
 		for {
 			resultDate = resultDate.AddDate(1, 0, 0)
-			if resultDate.After(now) {
+			if firstDateMoreSecondDate(resultDate, now) {
 				break
 			}
 		}
@@ -140,18 +137,18 @@ func NextDate(now time.Time, dstart string, repeat string, appLogger *logger.Log
 
 		appLogger.Infof("Applying daily repetition rule with interval: %d days", num)
 
-		if resultDate.After(now) {
-			return resultDate.Format(format.YYYYMMDD), nil
-		}
 		for {
 			resultDate = resultDate.AddDate(0, 0, num)
-			if resultDate.After(now) {
+			if firstDateMoreSecondDate(resultDate, now) {
 				break
 			}
 		}
 		return resultDate.Format(format.YYYYMMDD), nil
 
 	case "w":
+		if firstDateMoreSecondDate(now, resultDate) {
+			resultDate = now
+		}
 		if len(repeats) < 2 {
 			return "", errTooFewParameters
 		}
@@ -183,14 +180,6 @@ func NextDate(now time.Time, dstart string, repeat string, appLogger *logger.Log
 			weekdaysName = append(weekdaysName, weekdays[weekdayNumber])
 		}
 
-		if !resultDate.After(now) {
-			resultDate = now
-		} else {
-			if slices.Contains(weekdaysName, resultDate.Weekday()) {
-				return resultDate.Format(format.YYYYMMDD), nil
-			}
-		}
-
 		for {
 			resultDate = resultDate.AddDate(0, 0, 1)
 			if slices.Contains(weekdaysName, resultDate.Weekday()) {
@@ -199,6 +188,9 @@ func NextDate(now time.Time, dstart string, repeat string, appLogger *logger.Log
 		}
 
 	case "m":
+		if firstDateMoreSecondDate(now, resultDate) {
+			resultDate = now
+		}
 		if len(repeats) < 2 {
 			return "", errTooFewParameters
 		}
@@ -217,7 +209,7 @@ func NextDate(now time.Time, dstart string, repeat string, appLogger *logger.Log
 			months    []time.Month
 		)
 
-		for _, monthday := range strings.Split(repeats[1], ",") {
+		for monthday := range strings.SplitSeq(repeats[1], ",") {
 			monthdayNumber, err := strconv.Atoi(monthday)
 			if err != nil {
 				appLogger.Errorf("Invalid monthday format: %s", monthday)
@@ -232,7 +224,7 @@ func NextDate(now time.Time, dstart string, repeat string, appLogger *logger.Log
 		hasMonthFilter := false
 		if len(repeats) > 2 {
 			hasMonthFilter = true
-			for _, month := range strings.Split(repeats[2], ",") {
+			for month := range strings.SplitSeq(repeats[2], ",") {
 				monthNumber, err := strconv.Atoi(month)
 				if err != nil {
 					appLogger.Errorf("Invalid month format: %s", month)
@@ -242,14 +234,6 @@ func NextDate(now time.Time, dstart string, repeat string, appLogger *logger.Log
 					return "", fmt.Errorf("%s: %w", errRuleParameter, errors.New("invalid month ordinal number"))
 				}
 				months = append(months, time.Month(monthNumber))
-			}
-		}
-
-		if !resultDate.After(now) {
-			resultDate = now
-		} else {
-			if matchMonthRule(resultDate, monthdays, months, hasMonthFilter) {
-				return resultDate.Format(format.YYYYMMDD), nil
 			}
 		}
 

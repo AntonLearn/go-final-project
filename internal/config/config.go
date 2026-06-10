@@ -3,13 +3,12 @@
 package config
 
 import (
-	"crypto/sha256"
 	"database/sql"
-	"encoding/hex"
 	"os"
 	"path/filepath"
 
 	"github.com/antonlearn/go-final-project/internal/settings"
+	"github.com/antonlearn/go-final-project/pkg/hash"
 )
 
 // DatabaseConfig holds database-specific attributes including file names,
@@ -48,8 +47,7 @@ func LoadConfig() {
 	// Compute the SHA-256 hash of the configured password for secure verification.
 	var passwordHash string
 	if password != "" {
-		hash := sha256.Sum256([]byte(password))
-		passwordHash = hex.EncodeToString(hash[:])
+		passwordHash = hash.HashPassword(password)
 	}
 
 	// Resolve the application root directory relative to the current executable.
